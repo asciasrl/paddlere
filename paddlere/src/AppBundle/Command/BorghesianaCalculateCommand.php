@@ -42,7 +42,7 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
                 $inizi[$campo]=$log->getDataora();
             }
             if ($tipo == "Fine") {
-                $output->writeLn('Calculating ' . $tipo . ' for ' . $campo);
+                $output->writeLn($log->getDataora()->format('c') . ' Calculating ' . $tipo . ' for ' . $campo);
                 $log->setCampo($campo);
                 $inizio =  $inizi[$campo];
                 $log->setInizio($inizio);
