@@ -1,0 +1,5 @@
+services:
+    ascia_google_calendar:
+        class: Ascia\GoogleCalendarBundle\GoogleCalendarService
+        arguments: ["%google_calendar%", "@router", "@service_container"]
+        public: true
