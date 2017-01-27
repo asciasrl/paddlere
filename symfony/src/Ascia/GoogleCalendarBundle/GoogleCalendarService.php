@@ -2,7 +2,9 @@
 
 namespace Ascia\GoogleCalendarBundle;
 
+use Monolog\Logger;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
+use Symfony\Component\Security\Core\Exception\AuthenticationCredentialsNotFoundException;
 
 /**
  * Useful functions to interact with the Google API
@@ -26,6 +28,11 @@ class GoogleCalendarService
     protected $container;
 
     /**
+     * @var Logger
+     */
+    protected $logger;
+
+    /**
      * Constructor
      *
      * @param array                                      $parameters
@@ -36,6 +43,7 @@ class GoogleCalendarService
         $this->parameters = $parameters;
         $this->router = $router;
         $this->container = $container;
+        $this->logger = $container->get('logger');
     }
 
     /**
@@ -57,14 +65,18 @@ class GoogleCalendarService
 
         if ($cachedCredentials->isHit()) {
             $client->setAccessToken($cachedCredentials->get());
+            $this->logger->debug("Use cached credentials");
+            // Refresh the token if it's expired.
+            if ($client->isAccessTokenExpired()) {
+                $client->fetchAccessTokenWithRefreshToken();
+                $cachedCredentials->set($client->getAccessToken());
+                $this->container->get('cache.app')->save($cachedCredentials);
+                $this->logger->debug("Saved AccessTokenWithRefreshToken");
+            }
+        } else {
+            $this->logger->warn("Access Token not available");
         }
 
-        // Refresh the token if it's expired.
-        if ($client->isAccessTokenExpired()) {
-            $client->fetchAccessTokenWithRefreshToken();
-            $cachedCredentials->set($client->getAccessToken());
-            $this->container->get('cache.app')->save($cachedCredentials);
-        }
 
         return $client;
     }
