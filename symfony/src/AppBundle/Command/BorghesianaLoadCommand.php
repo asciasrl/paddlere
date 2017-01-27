@@ -51,6 +51,10 @@ class BorghesianaLoadCommand extends ContainerAwareCommand
                 //var_dump($content);
                 $row = array_combine($headers,$content);
                 $dataora = \DateTime::createFromFormat('d/m/Y H:i:s',$row['Data'] . ' ' . $row['Ora']);
+                if ($dataora === false) {
+                    $this->getContainer()->get('logger')->warn(sprintf("In '%s' row %d invalid row: '%s'",$file->getRelativePathname(),$totals,$r));
+                    continue;
+                }
                 $log = $repoBorghesianaLog->findOneBy(array('dataora' => $dataora));
                 if ($log) {
                     //var_dump($log);
