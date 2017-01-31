@@ -33,6 +33,13 @@ class BorghesianaLog
 
     /**
      * @var
+     * @ORM\Column(type="string", length=32, nullable=true)
+     *
+     */
+    private $tipo;
+
+    /**
+     * @var
      * @ORM\Column(type="string", length=10, nullable=true)
      */
     private $campo;
@@ -56,7 +63,6 @@ class BorghesianaLog
     private $durata;
 
     //  bin/console doctrine:generate:entities AppBundle/Entity/BorghesianaLog
-
 
     /**
      * Get id
@@ -114,6 +120,30 @@ class BorghesianaLog
     public function getEvento()
     {
         return $this->evento;
+    }
+
+    /**
+     * Set tipo
+     *
+     * @param string $tipo
+     *
+     * @return BorghesianaLog
+     */
+    public function setTipo($tipo)
+    {
+        $this->tipo = $tipo;
+
+        return $this;
+    }
+
+    /**
+     * Get tipo
+     *
+     * @return string
+     */
+    public function getTipo()
+    {
+        return $this->tipo;
     }
 
     /**

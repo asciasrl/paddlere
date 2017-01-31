@@ -29,20 +29,26 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
         // @var EntityRepository
         $repoBorghesianaLog = $em->getRepository('AppBundle\Entity\BorghesianaLog');
         $criteria = Criteria::create()
-            ->where(Criteria::expr()->neq("evento","Dummy"))
+            //->where(Criteria::expr()->neq("evento","Dummy"))
             ->orderBy(array("dataora" => Criteria::ASC));
         $logs = $repoBorghesianaLog->matching($criteria);
 
         $inizi = array();
         foreach ($logs as $log) {
             $evento = $log->getEvento();
-            list($tipo,$campo) = explode(' ',$evento,2);
+            list($tipo,$campo) = array_pad(explode(' ',$evento,2), 2 , null);
+            if ($tipo == "Dummy") {
+                $log->setTipo($tipo);
+                $log->setInizio($log->getDataora());
+                $log->setFine($log->getDataora());
+            }
             if ($tipo == "Inizio") {
                 $output->writeLn('Saving ' . $tipo . ' for ' . $campo);
                 $inizi[$campo]=$log->getDataora();
             }
             if ($tipo == "Fine") {
                 $output->writeLn($log->getDataora()->format('c') . ' Calculating ' . $tipo . ' for ' . $campo);
+                $log->setTipo('Utilizzo');
                 $log->setCampo($campo);
                 $inizio =  $inizi[$campo];
                 $log->setInizio($inizio);
@@ -51,6 +57,14 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
                 $interval =  $inizio->diff($fine);
                 $durata = round(($interval->h*3600+$interval->i*60+$interval->s)/60);
                 $log->setDurata($durata);
+            }
+            if ($tipo == "Abuso") {
+                $output->writeLn($log->getDataora()->format('c') . ' Calculating ' . $tipo . ' for ' . $campo);
+                $log->setTipo('Abuso');
+                $log->setCampo($campo);
+                $log->setInizio($log->getDataora());
+                $log->setFine($log->getDataora());
+                $log->setDurata(0);
             }
             $em->flush();
         }
