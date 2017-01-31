@@ -11,16 +11,54 @@
             <div id="form">
                 {{ form_start(form) }}
                     {{ form_widget(form) }}
-                    <input type="submit">
                 {{  form_end(form) }}
 
             </div>
 
-            <div id="timeline"></div>
-            </div>
+            <div id="timeline" style="height: 2048px;"></div>
 
         </div>
     </div>
+{% endblock %}
+
+{% block javascripts %}
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <script type="text/javascript">
+        google.charts.load("current", {packages:['corechart','timeline'], language: 'it'});
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+
+            var container = document.getElementById('timeline');
+            var chart = new google.visualization.Timeline(container);
+            var dataTable = new google.visualization.DataTable();
+            dataTable.addColumn({ type: 'string', id: 'Day' });
+            dataTable.addColumn({ type: 'string', id: 'Comment' });
+            dataTable.addColumn({ type: 'date', id: 'Start' });
+            dataTable.addColumn({ type: 'date', id: 'End' });
+            dataTable.addRows([
+                {% for event in events %}
+
+                                    ['{{ event.inizio|date("D d/m/Y") }}', '{{ event.tipo }}', new Date('2000-01-01T{{ event.inizio|date("H:i:sO") }}'), new Date('2000-01-01T{{ event.fine|date("H:i:sO") }}')]{%  if not loop.last %},
+
+                {#
+                ['{{ event.campo }}', '{{ event.campo }}', new Date('{{ event.inizio|date("c") }}'), new Date('{{ event.fine|date("c") }}')]{%  if not loop.last %},
+                #}
+{% endif %}
+                {% endfor %}
+            ]);
+
+            var options = {
+                //'title':'How Much Pizza I Ate Last Night',
+                //'height':1000,
+                //timeline: { singleColor: 'cyan' },
+                avoidOverlappingGridLines: true,
+                //colors: [ 'white','green', 'red']
+            };
+
+            chart.draw(dataTable,options);
+        }
+    </script>
 {% endblock %}
 
 {% block stylesheets %}
