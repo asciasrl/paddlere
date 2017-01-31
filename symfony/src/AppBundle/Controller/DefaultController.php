@@ -56,7 +56,7 @@ class DefaultController extends Controller
         if ($form->isSubmitted() && $form->isValid()) {
             $data = $form->getData();
 
-            dump($data);
+            function_exists('dump') ? dump($data):0;
 
             $criteria = new Criteria();
             $criteria->where($criteria->expr()->neq('inizio', null));
@@ -73,7 +73,7 @@ class DefaultController extends Controller
 
             $events = $this->getDoctrine()->getRepository('AppBundle:BorghesianaLog')->matching($criteria);
 
-            dump($events);
+            function_exists('dump') ? dump($events):0;
 
         } else {
             $events = array();
