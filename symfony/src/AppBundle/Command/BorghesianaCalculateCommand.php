@@ -46,7 +46,7 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
                 $output->writeLn('Saving ' . $tipo . ' for ' . $campo);
                 $inizi[$campo]=$log->getDataora();
             }
-            if ($tipo == "Fine") {
+            if ($tipo == "Fine" && array_key_exists($campo,$inizi)) {
                 $output->writeLn($log->getDataora()->format('c') . ' Calculating ' . $tipo . ' for ' . $campo);
                 $log->setTipo('Utilizzo');
                 $log->setCampo($campo);
