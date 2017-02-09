@@ -9,6 +9,7 @@ use Doctrine\ORM\EntityRepository;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
+use Symfony\Component\Console\Input\InputOption;
 use Symfony\Component\Console\Output\OutputInterface;
 
 use Symfony\Component\Finder\Finder;
@@ -20,7 +21,8 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
     {
         $this
             ->setName('app:borghesiana:calculate')
-            ->setDescription('Calculate use based on Borghesiana logs');
+            ->setDescription('Calculate use based on Borghesiana logs')
+            ->addOption('all',null,InputOption::VALUE_NONE,"Recalculate all");
     }
 
     protected function execute(InputInterface $input, OutputInterface $output)
@@ -29,8 +31,10 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
         // @var EntityRepository
         $repoBorghesianaLog = $em->getRepository('AppBundle\Entity\BorghesianaLog');
         $criteria = Criteria::create()
-            //->where(Criteria::expr()->neq("evento","Dummy"))
             ->orderBy(array("dataora" => Criteria::ASC));
+        if (!$input->getOption('all')) {
+            $criteria->where(Criteria::expr()->isNull('tipo'));
+        }
         $logs = $repoBorghesianaLog->matching($criteria);
 
         $inizi = array();
@@ -38,13 +42,19 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
             $evento = $log->getEvento();
             list($tipo,$campo) = array_pad(explode(' ',$evento,2), 2 , null);
             if ($tipo == "Dummy") {
+                $output->writeLn($log->getDataora()->format('c') . ' ' . $tipo);
                 $log->setTipo($tipo);
                 $log->setInizio($log->getDataora());
                 $log->setFine($log->getDataora());
             }
             if ($tipo == "Inizio") {
-                $output->writeLn('Saving ' . $tipo . ' for ' . $campo);
-                $inizi[$campo]=$log->getDataora();
+                $log->setTipo($tipo);
+                if (!array_key_exists($campo,$inizi) || $inizi[$campo]==null) {
+                    $output->writeLn($log->getDataora()->format('c') . ' Saving ' . $tipo . ' for ' . $campo);
+                    $inizi[$campo]=$log->getDataora();
+                } else {
+                    $output->writeLn($log->getDataora()->format('c') . ' Duplicated ' . $tipo . ' for ' . $campo);
+                }
             }
             if ($tipo == "Fine" && array_key_exists($campo,$inizi)) {
                 $output->writeLn($log->getDataora()->format('c') . ' Calculating ' . $tipo . ' for ' . $campo);
@@ -57,9 +67,10 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
                 $interval =  $inizio->diff($fine);
                 $durata = round(($interval->h*3600+$interval->i*60+$interval->s)/60);
                 $log->setDurata($durata);
+                $inizi[$campo] = null;
             }
             if ($tipo == "Abuso") {
-                $output->writeLn($log->getDataora()->format('c') . ' Calculating ' . $tipo . ' for ' . $campo);
+                $output->writeLn($log->getDataora()->format('c') . ' ' . $tipo . ' for ' . $campo);
                 $log->setTipo('Abuso');
                 $log->setCampo($campo);
                 $log->setInizio($log->getDataora());
