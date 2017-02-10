@@ -33,11 +33,17 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
         $criteria = Criteria::create()
             ->orderBy(array("dataora" => Criteria::ASC));
         if (!$input->getOption('all')) {
-            $criteria->where(Criteria::expr()->isNull('tipo'));
+            $criteria->where(Criteria::expr()->isNull('fine'));
         }
         $logs = $repoBorghesianaLog->matching($criteria);
 
+        /**
+         * @var BorghesianaLog[] $inizi
+         */
         $inizi = array();
+        /**
+         * @var BorghesianaLog $log
+         */
         foreach ($logs as $log) {
             $evento = $log->getEvento();
             list($tipo,$campo) = array_pad(explode(' ',$evento,2), 2 , null);
@@ -48,12 +54,26 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
                 $log->setFine($log->getDataora());
             }
             if ($tipo == "Inizio") {
-                $log->setTipo($tipo);
                 if (!array_key_exists($campo,$inizi) || $inizi[$campo]==null) {
+                    $log->setTipo($tipo);
+                    $log->setInizio($log->getDataora());
                     $output->writeLn($log->getDataora()->format('c') . ' Saving ' . $tipo . ' for ' . $campo);
-                    $inizi[$campo]=$log->getDataora();
+                    $inizi[$campo]=$log;
                 } else {
-                    $output->writeLn($log->getDataora()->format('c') . ' Duplicated ' . $tipo . ' for ' . $campo);
+                    $interval =  $inizi[$campo]->getDataora()->diff($log->getDataora());
+                    //var_dump($interval);
+                    if ($interval->days > 1) {
+                        $output->writeLn('Orpham ' . $inizi[$campo]);
+                        $inizi[$campo]->setTipo($tipo . ' Orphan');
+                        $inizi[$campo]->setFine($log->getDataora());
+                        $output->writeLn($log->getDataora()->format('c') . ' Replacing ' . $tipo . ' for ' . $campo);
+                        $inizi[$campo]=$log;
+                    } else {
+                        $output->writeLn($log->getDataora()->format('c') . ' Duplicated ' . $tipo . ' for ' . $campo);
+                        $log->setInizio($inizi[$campo]->getDataora());
+                        $log->setFine($log->getDataora());
+                        $log->setTipo($tipo . ' Dup');
+                    }
                 }
             }
             if ($tipo == "Fine" && array_key_exists($campo,$inizi)) {
@@ -61,12 +81,14 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
                 $log->setTipo('Utilizzo');
                 $log->setCampo($campo);
                 $inizio =  $inizi[$campo];
-                $log->setInizio($inizio);
+                $log->setInizio($inizio->getDataora());
                 $fine = $log->getDataora();
+                $inizio->setFine($fine);
                 $log->setFine($fine);
-                $interval =  $inizio->diff($fine);
+                $interval =  $inizio->getDataora()->diff($fine);
                 $durata = round(($interval->h*3600+$interval->i*60+$interval->s)/60);
                 $log->setDurata($durata);
+                $inizio->setDurata($durata);
                 $inizi[$campo] = null;
             }
             if ($tipo == "Abuso") {
@@ -75,7 +97,6 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
                 $log->setCampo($campo);
                 $log->setInizio($log->getDataora());
                 $log->setFine($log->getDataora());
-                $log->setDurata(0);
             }
             $em->flush();
         }

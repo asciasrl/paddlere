@@ -10,6 +10,10 @@ use Doctrine\ORM\Mapping as ORM;
  */
 class BorghesianaLog
 {
+    public function __toString()
+    {
+        return $this->getDataora()->format('c') . ' ' . $this->getEvento();
+    }
 
     /**
      * @ORM\Column(type="guid")
