@@ -40,7 +40,7 @@
             dataTable.addRows([
                 {% for event in events %}
 
-                                    ['{{ event.inizio|date("D d/m/Y") }}', '{{ event.tipo }}', new Date('2000-01-01T{{ event.inizio|date("H:i:sO") }}'), new Date('2000-01-01T{{ event.fine|date("H:i:sO") }}')]{%  if not loop.last %},
+                                    ['{{ event.inizio|date("D d/m/Y") }}', '{{ event.tipo }}', new Date({{ event.inizio|date("2000,01,01,H,i,s") }}), new Date({{ event.fine|date("2000,01,01,H,i,s") }})]{%  if not loop.last %},
 
                 {#
                 ['{{ event.campo }}', '{{ event.campo }}', new Date('{{ event.inizio|date("c") }}'), new Date('{{ event.fine|date("c") }}')]{%  if not loop.last %},
