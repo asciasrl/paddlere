@@ -1,3 +1,0 @@
-ascia_google_calendar_homepage:
-    path:     /
-    defaults: { _controller: AsciaGoogleCalendarBundle:Default:index }
