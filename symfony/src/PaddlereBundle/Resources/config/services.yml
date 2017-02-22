@@ -1,0 +1,15 @@
+services:
+#    paddlere.example:
+#        class: PaddlereBundle\Example
+#        arguments: ["@service_id", "plain_value", "%parameter%"]
+
+
+    paddlere.manager.device:
+        class: PaddlereBundle\Entity\DeviceManager
+        arguments: ["@doctrine"]
+
+    paddlere.admin.device:
+        class: PaddlereBundle\Admin\DeviceAdmin
+        arguments: [~, PaddlereBundle\Entity\Device, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Setup, label: Device }
