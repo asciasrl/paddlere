@@ -8,7 +8,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 
-class DeviceAdmin extends AbstractAdmin
+class TagAdmin extends AbstractAdmin
 {
 
     protected function configureListFields(ListMapper $mapper)
@@ -17,6 +17,9 @@ class DeviceAdmin extends AbstractAdmin
             ->addIdentifier('name')
             ->add('serial')
             ->add('lastseenAt')
+            ->add('credit')
+            ->add('fun')
+            ->add('enabled')
         ;
     }
 
@@ -25,6 +28,8 @@ class DeviceAdmin extends AbstractAdmin
         $mapper
             ->add('name')
             ->add('serial')
+            ->add('fun')
+            ->add('enabled')
         ;
     }
 
@@ -33,6 +38,9 @@ class DeviceAdmin extends AbstractAdmin
 		$mapper
             ->add('name')
             ->add('serial')
+            ->add('credit')
+            ->add('fun')
+            ->add('enabled')
 		;
 	}
 
@@ -42,6 +50,9 @@ class DeviceAdmin extends AbstractAdmin
             ->add('name')
             ->add('serial')
             ->add('lastseenAt')
+            ->add('credit')
+            ->add('fun')
+            ->add('enabled')
         ;
     }
 

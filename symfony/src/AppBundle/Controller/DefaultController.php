@@ -86,18 +86,4 @@ class DefaultController extends Controller
         ]);
     }
 
-    /**
-     * @param Request $request
-     * @Route("slimline", name="slimline")
-     */
-    public function slimlineAction(Request $request)
-    {
-        $deviceId = $request->query->getInt('D');
-        if (empty($deviceId)) {
-            throw new \InvalidArgumentException("DeviceID not given");
-        }
-        return $this->render('default/slimline.twig', [
-            'DeviceId' => $deviceId,
-        ]);
-    }
 }

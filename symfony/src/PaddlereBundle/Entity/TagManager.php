@@ -5,21 +5,21 @@ namespace PaddlereBundle\Entity;
 use Sonata\CoreBundle\Model\BaseEntityManager;
 use Doctrine\Common\Persistence\ManagerRegistry;
 
-class DeviceManager extends BaseEntityManager
+class TagManager extends BaseEntityManager
 {
 
     public function __construct(ManagerRegistry $registry)
     {
-        parent::__construct('PaddlereBundle\Entity\Device', $registry);
+        parent::__construct('PaddlereBundle\Entity\Tag', $registry);
     }
 
     /**
-     * Updates lastseen of the device
-     * @param Device $device
+     * Updates lastseen of the tag
+     * @param Tag $tag
      */
-    public function ping(Device $device)
+    public function ping(Tag $tag)
     {
-        $device->setLastseenAt(new \DateTime());
+        $tag->setLastseenAt(new \DateTime());
         $this->getEntityManager()->flush();
     }
 }

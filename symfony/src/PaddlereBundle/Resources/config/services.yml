@@ -8,8 +8,18 @@ services:
         class: PaddlereBundle\Entity\DeviceManager
         arguments: ["@doctrine"]
 
+    paddlere.manager.tag:
+        class: PaddlereBundle\Entity\TagManager
+        arguments: ["@doctrine"]
+
     paddlere.admin.device:
         class: PaddlereBundle\Admin\DeviceAdmin
         arguments: [~, PaddlereBundle\Entity\Device, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: Setup, label: Device }
+
+    paddlere.admin.tag:
+        class: PaddlereBundle\Admin\TagAdmin
+        arguments: [~, PaddlereBundle\Entity\Tag, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Setup, label: Tag }

@@ -7,10 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Device
  *
- * @ORM\Table(name="device")
+ * @ORM\Table(name="tag")
  * @ORM\Entity
  */
-class Device
+class Tag
 {
     /**
      * @var int
@@ -27,9 +27,9 @@ class Device
     }
 
     /**
-     * @var int
+     * @var string
      *
-     * @ORM\Column(name="serial", type="integer", unique=true)
+     * @ORM\Column(name="serial", type="string", unique=true)
      */
     protected $serial;
 
@@ -41,14 +41,34 @@ class Device
     protected $name;
 
     /**
+     * @var int
+     *
+     * @ORM\Column(name="credit", type="integer")
+     */
+    protected $credit;
+
+    /**
+     * @var bool
+     *
+     * @ORM\Column(name="fun", type="boolean")
+     */
+    protected $fun;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="enabled", type="boolean")
+     */
+    protected $enabled;
+
+    /**
      * @var \DateTime
-     * 
+     *
      * @ORM\Column(name="lastseen_at", type="datetime", nullable=true)
      */
     protected $lastseenAt;
 
-    // bin/console doctrine:generate:entities --no-backup PaddlereBundle\Entity\Device
-
+    // bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Key
 
     /**
      * Get id
@@ -63,9 +83,9 @@ class Device
     /**
      * Set serial
      *
-     * @param integer $serial
+     * @param string $serial
      *
-     * @return Device
+     * @return Key
      */
     public function setSerial($serial)
     {
@@ -77,7 +97,7 @@ class Device
     /**
      * Get serial
      *
-     * @return integer
+     * @return string
      */
     public function getSerial()
     {
@@ -89,7 +109,7 @@ class Device
      *
      * @param string $name
      *
-     * @return Device
+     * @return Key
      */
     public function setName($name)
     {
@@ -109,11 +129,83 @@ class Device
     }
 
     /**
+     * Set credit
+     *
+     * @param integer $credit
+     *
+     * @return Key
+     */
+    public function setCredit($credit)
+    {
+        $this->credit = $credit;
+
+        return $this;
+    }
+
+    /**
+     * Get credit
+     *
+     * @return integer
+     */
+    public function getCredit()
+    {
+        return $this->credit;
+    }
+
+    /**
+     * Set fun
+     *
+     * @param boolean $fun
+     *
+     * @return Key
+     */
+    public function setFun($fun)
+    {
+        $this->fun = $fun;
+
+        return $this;
+    }
+
+    /**
+     * Get fun
+     *
+     * @return boolean
+     */
+    public function getFun()
+    {
+        return $this->fun;
+    }
+
+    /**
+     * Set enabled
+     *
+     * @param boolean $enabled
+     *
+     * @return Key
+     */
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    /**
+     * Get enabled
+     *
+     * @return boolean
+     */
+    public function getEnabled()
+    {
+        return $this->enabled;
+    }
+
+    /**
      * Set lastseenAt
      *
      * @param \DateTime $lastseenAt
      *
-     * @return Device
+     * @return Key
      */
     public function setLastseenAt($lastseenAt)
     {
