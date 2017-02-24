@@ -27,7 +27,7 @@ class DefaultController extends Controller
      * @Route(
      *     "slimline/{deviceId}/{operation}/{param}",
      *     name="slimline",
-     *     defaults={"continuation": "0"}
+     *     defaults={"param": null}
      * )
      */
     public function slimlineAction(Request $request,$deviceId,$operation,$param)
@@ -60,14 +60,14 @@ class DefaultController extends Controller
                 /** @var TagManager $tagmaneger */
                 $tagmaneger = $this->get('paddlere.manager.tag');
                 /** @var Tag $tag */
-                $tag = $tagmaneger->findOneBy(array('serial' => $param, 'enabled' => true));
+                $tag = $tagmaneger->findOneBy(array('serial' => $param));
                 if (empty($tag)) {
                     $msg = sprintf("Tag '%s' not found",$param);
                     $log->error($msg);
                     return new Response($msg,404);
                 } else {
                     $tagmaneger->ping($tag);
-                    $msg = sprintf("%s;%d;%d",$tag->getSerial(),$tag->getCredit(),$tag->getFun());  // ;%d;%s   ,$tag->getEnabled(),$tag->getName()
+                    $msg = sprintf("%s;%d;%d;%d;%s",$tag->getSerial(),$tag->getCredit(),$tag->getFun(),$tag->getEnabled(),$tag->getName());
                     $log->info($msg);
                     return new Response($msg);
                 }
