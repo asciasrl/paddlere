@@ -68,7 +68,13 @@ class Tag
      */
     protected $lastseenAt;
 
-    // bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Key
+    /**
+     * @var Facility
+     * @ORM\ManyToOne(targetEntity="Facility", inversedBy="tags")
+     */
+    protected $facility;
+
+    // bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Tag
 
     /**
      * Get id
@@ -85,7 +91,7 @@ class Tag
      *
      * @param string $serial
      *
-     * @return Key
+     * @return Tag
      */
     public function setSerial($serial)
     {
@@ -109,7 +115,7 @@ class Tag
      *
      * @param string $name
      *
-     * @return Key
+     * @return Tag
      */
     public function setName($name)
     {
@@ -133,7 +139,7 @@ class Tag
      *
      * @param integer $credit
      *
-     * @return Key
+     * @return Tag
      */
     public function setCredit($credit)
     {
@@ -157,7 +163,7 @@ class Tag
      *
      * @param boolean $fun
      *
-     * @return Key
+     * @return Tag
      */
     public function setFun($fun)
     {
@@ -181,7 +187,7 @@ class Tag
      *
      * @param boolean $enabled
      *
-     * @return Key
+     * @return Tag
      */
     public function setEnabled($enabled)
     {
@@ -205,7 +211,7 @@ class Tag
      *
      * @param \DateTime $lastseenAt
      *
-     * @return Key
+     * @return Tag
      */
     public function setLastseenAt($lastseenAt)
     {
@@ -222,5 +228,29 @@ class Tag
     public function getLastseenAt()
     {
         return $this->lastseenAt;
+    }
+
+    /**
+     * Set facility
+     *
+     * @param \PaddlereBundle\Entity\Facility $facility
+     *
+     * @return Tag
+     */
+    public function setFacility(\PaddlereBundle\Entity\Facility $facility = null)
+    {
+        $this->facility = $facility;
+
+        return $this;
+    }
+
+    /**
+     * Get facility
+     *
+     * @return \PaddlereBundle\Entity\Facility
+     */
+    public function getFacility()
+    {
+        return $this->facility;
     }
 }

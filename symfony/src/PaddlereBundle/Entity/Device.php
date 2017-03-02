@@ -23,7 +23,7 @@ class Device
 
     public function __toString()
     {
-        return $this->getName();
+        return ($this->getFacility()? $this->getFacility() . ' - ':'') . $this->getName();
     }
 
     /**
@@ -47,8 +47,26 @@ class Device
      */
     protected $lastseenAt;
 
-    // bin/console doctrine:generate:entities --no-backup PaddlereBundle\Entity\Device
+    /**
+     * @var Facility
+     * @ORM\ManyToOne(targetEntity="Facility", inversedBy="devices")
+     */
+    protected $facility;
 
+    /**
+     * @var Field[]
+     * @ORM\OneToMany(targetEntity="Field", mappedBy="device")
+     */
+    protected $fields;
+
+    // bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Device
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->fields = new \Doctrine\Common\Collections\ArrayCollection();
+    }
 
     /**
      * Get id
@@ -130,5 +148,63 @@ class Device
     public function getLastseenAt()
     {
         return $this->lastseenAt;
+    }
+
+    /**
+     * Set facility
+     *
+     * @param \PaddlereBundle\Entity\Facility $facility
+     *
+     * @return Device
+     */
+    public function setFacility(\PaddlereBundle\Entity\Facility $facility = null)
+    {
+        $this->facility = $facility;
+
+        return $this;
+    }
+
+    /**
+     * Get facility
+     *
+     * @return \PaddlereBundle\Entity\Facility
+     */
+    public function getFacility()
+    {
+        return $this->facility;
+    }
+
+    /**
+     * Add field
+     *
+     * @param \PaddlereBundle\Entity\Field $field
+     *
+     * @return Device
+     */
+    public function addField(\PaddlereBundle\Entity\Field $field)
+    {
+        $this->fields[] = $field;
+
+        return $this;
+    }
+
+    /**
+     * Remove field
+     *
+     * @param \PaddlereBundle\Entity\Field $field
+     */
+    public function removeField(\PaddlereBundle\Entity\Field $field)
+    {
+        $this->fields->removeElement($field);
+    }
+
+    /**
+     * Get fields
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getFields()
+    {
+        return $this->fields;
     }
 }

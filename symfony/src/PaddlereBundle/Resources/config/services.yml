@@ -12,14 +12,32 @@ services:
         class: PaddlereBundle\Entity\TagManager
         arguments: ["@doctrine"]
 
+    paddlere.admin.facility:
+        class: PaddlereBundle\Admin\FacilityAdmin
+        arguments: [~, PaddlereBundle\Entity\Facility, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Setup, label: Facility }
+
     paddlere.admin.device:
         class: PaddlereBundle\Admin\DeviceAdmin
         arguments: [~, PaddlereBundle\Entity\Device, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: Setup, label: Device }
 
+    paddlere.admin.field:
+        class: PaddlereBundle\Admin\FieldAdmin
+        arguments: [~, PaddlereBundle\Entity\Field, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Setup, label: Field }
+
     paddlere.admin.tag:
         class: PaddlereBundle\Admin\TagAdmin
         arguments: [~, PaddlereBundle\Entity\Tag, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: Setup, label: Tag }
+
+    paddlere.admin.event:
+        class: PaddlereBundle\Admin\EventAdmin
+        arguments: [~, PaddlereBundle\Entity\Event, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Manage, label: Event }

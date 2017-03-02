@@ -8,16 +8,14 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 
-class DeviceAdmin extends AbstractAdmin
+class FieldAdmin extends AbstractAdmin
 {
 
     protected function configureListFields(ListMapper $mapper)
     {
         $mapper
             ->addIdentifier('name')
-            ->add('serial')
-            ->add('facility')
-            ->add('lastseenAt')
+            ->add('device')
         ;
     }
 
@@ -25,8 +23,7 @@ class DeviceAdmin extends AbstractAdmin
     {
         $mapper
             ->add('name')
-            ->add('serial')
-            ->add('facility')
+            ->add('device')
         ;
     }
 
@@ -34,8 +31,7 @@ class DeviceAdmin extends AbstractAdmin
 	{
 		$mapper
             ->add('name')
-            ->add('serial')
-            ->add('facility')
+            ->add('device')
 		;
 	}
 
@@ -43,9 +39,8 @@ class DeviceAdmin extends AbstractAdmin
     {
         $mapper
             ->add('name')
-            ->add('serial')
-            ->add('facility')
-            ->add('lastseenAt')
+            ->add('device')
+            ->add('device.facility')
         ;
     }
 

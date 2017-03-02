@@ -16,10 +16,11 @@ class TagAdmin extends AbstractAdmin
         $mapper
             ->addIdentifier('name')
             ->add('serial')
-            ->add('lastseenAt')
+            ->add('facility')
             ->add('credit')
             ->add('fun')
             ->add('enabled')
+            ->add('lastseenAt')
         ;
     }
 
@@ -28,6 +29,7 @@ class TagAdmin extends AbstractAdmin
         $mapper
             ->add('name')
             ->add('serial')
+            ->add('facility')
             ->add('fun')
             ->add('enabled')
         ;
@@ -38,6 +40,7 @@ class TagAdmin extends AbstractAdmin
 		$mapper
             ->add('name')
             ->add('serial')
+            ->add('facility')
             ->add('credit')
             ->add('fun')
             ->add('enabled')
@@ -49,10 +52,11 @@ class TagAdmin extends AbstractAdmin
         $mapper
             ->add('name')
             ->add('serial')
-            ->add('lastseenAt')
+            ->add('facility')
             ->add('credit')
             ->add('fun')
             ->add('enabled')
+            ->add('lastseenAt')
         ;
     }
 

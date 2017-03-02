@@ -2,22 +2,22 @@
 
 namespace PaddlereBundle\Admin;
 
+use PaddlereBundle\Entity\Facility;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 
-class DeviceAdmin extends AbstractAdmin
+class FacilityAdmin extends AbstractAdmin
 {
 
     protected function configureListFields(ListMapper $mapper)
     {
         $mapper
             ->addIdentifier('name')
-            ->add('serial')
-            ->add('facility')
-            ->add('lastseenAt')
+            ->add('devices')
+            ->add('tags')
         ;
     }
 
@@ -25,8 +25,8 @@ class DeviceAdmin extends AbstractAdmin
     {
         $mapper
             ->add('name')
-            ->add('serial')
-            ->add('facility')
+            ->add('devices')
+            ->add('tags')
         ;
     }
 
@@ -34,8 +34,6 @@ class DeviceAdmin extends AbstractAdmin
 	{
 		$mapper
             ->add('name')
-            ->add('serial')
-            ->add('facility')
 		;
 	}
 
@@ -43,9 +41,8 @@ class DeviceAdmin extends AbstractAdmin
     {
         $mapper
             ->add('name')
-            ->add('serial')
-            ->add('facility')
-            ->add('lastseenAt')
+            ->add('devices')
+            ->add('tags')
         ;
     }
 
