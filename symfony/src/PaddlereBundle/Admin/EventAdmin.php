@@ -28,6 +28,7 @@ class EventAdmin extends AbstractAdmin
         $mapper
             ->add('eventType')
             ->add('field')
+            ->add('field.device.facility')
         ;
     }
 

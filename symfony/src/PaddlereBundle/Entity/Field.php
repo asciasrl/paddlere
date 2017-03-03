@@ -7,7 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Device
  *
- * @ORM\Table(name="field")
+ * @ORM\Table(name="field",
+ *     uniqueConstraints={
+ *     @ORM\UniqueConstraint(name="name_device_idx", columns={"device_id","name"})}
+ *     )
  * @ORM\Entity
  */
 class Field
@@ -29,7 +32,7 @@ class Field
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255, unique=true)
+     * @ORM\Column(name="name", type="string", length=255)
      */
     protected $name;
 

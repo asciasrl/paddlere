@@ -3,13 +3,20 @@ services:
 #        class: PaddlereBundle\Example
 #        arguments: ["@service_id", "plain_value", "%parameter%"]
 
-
     paddlere.manager.device:
         class: PaddlereBundle\Entity\DeviceManager
         arguments: ["@doctrine"]
 
     paddlere.manager.tag:
         class: PaddlereBundle\Entity\TagManager
+        arguments: ["@doctrine"]
+
+    paddlere.manager.field:
+        class: PaddlereBundle\Entity\FieldManager
+        arguments: ["@doctrine"]
+
+    paddlere.manager.event:
+        class: PaddlereBundle\Entity\EventManager
         arguments: ["@doctrine"]
 
     paddlere.admin.facility:
@@ -41,3 +48,8 @@ services:
         arguments: [~, PaddlereBundle\Entity\Event, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: Manage, label: Event }
+
+    paddlere.service.event:
+        class: PaddlereBundle\Service\EventService
+        arguments: ["@logger", "@paddlere.manager.event", "@paddlere.manager.device", "@paddlere.manager.field" ]
+

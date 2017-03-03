@@ -47,6 +47,12 @@ class Event
     protected $duration;
 
     /**
+     * @var Device
+     * @ORM\ManyToOne(targetEntity="Device")
+     */
+    protected $device;
+
+    /**
      * @var Field
      * @ORM\ManyToOne(targetEntity="Field")
      */
@@ -195,5 +201,29 @@ class Event
     public function getField()
     {
         return $this->field;
+    }
+
+    /**
+     * Set device
+     *
+     * @param \PaddlereBundle\Entity\Device $device
+     *
+     * @return Event
+     */
+    public function setDevice(\PaddlereBundle\Entity\Device $device = null)
+    {
+        $this->device = $device;
+
+        return $this;
+    }
+
+    /**
+     * Get device
+     *
+     * @return \PaddlereBundle\Entity\Device
+     */
+    public function getDevice()
+    {
+        return $this->device;
     }
 }

@@ -6,6 +6,7 @@ use AppBundle\Entity\BorghesianaLog;
 use Doctrine\Common\Collections\Criteria;
 use Doctrine\ORM\EntityManager;
 use Doctrine\ORM\EntityRepository;
+use PaddlereBundle\Service\EventService;
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputInterface;
@@ -27,6 +28,9 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
 
     protected function execute(InputInterface $input, OutputInterface $output)
     {
+        /** @var EventService $eventService */
+        $eventService = $this->getContainer()->get('paddlere.service.event');
+
         $em = $this->getContainer()->get('doctrine')->getManager();
         // @var EntityRepository
         $repoBorghesianaLog = $em->getRepository('AppBundle\Entity\BorghesianaLog');
@@ -90,6 +94,8 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
                 $log->setDurata($durata);
                 $inizio->setDurata($durata);
                 $inizi[$campo] = null;
+
+                $eventService->addEvent('4981104', 'Utilizzo', $inizio->getDataora(), $campo, $log->getDataora());
             }
             if ($tipo == "Abuso") {
                 $output->writeLn($log->getDataora()->format('c') . ' ' . $tipo . ' for ' . $campo);
@@ -97,6 +103,7 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
                 $log->setCampo($campo);
                 $log->setInizio($log->getDataora());
                 $log->setFine($log->getDataora());
+                $eventService->addEvent('4981104', $tipo, $log->getDataora(),$campo);
             }
             $em->flush();
         }
