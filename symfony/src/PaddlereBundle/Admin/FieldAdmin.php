@@ -6,16 +6,28 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
 
 class FieldAdmin extends AbstractAdmin
 {
+    protected function configureRoutes(RouteCollection $collection)
+    {
+        $collection->add('timeline', $this->getRouterIdParameter() . '/timeline');
+    }
 
     protected function configureListFields(ListMapper $mapper)
     {
         $mapper
             ->addIdentifier('name')
-            ->add('device')
+            ->add('facility')
+            ->add('_action', null, array(
+                'actions' => array(
+                    'timeline' => array(
+                        'template' => 'PaddlereBundle:CRUD:list__action_timeline.html.twig'
+                    )
+                )
+            ))
         ;
     }
 
@@ -23,7 +35,7 @@ class FieldAdmin extends AbstractAdmin
     {
         $mapper
             ->add('name')
-            ->add('device')
+            ->add('facility')
         ;
     }
 
@@ -31,7 +43,7 @@ class FieldAdmin extends AbstractAdmin
 	{
 		$mapper
             ->add('name')
-            ->add('device')
+            ->add('facility')
 		;
 	}
 
@@ -39,8 +51,8 @@ class FieldAdmin extends AbstractAdmin
     {
         $mapper
             ->add('name')
-            ->add('device')
-            ->add('device.facility')
+            ->add('facility')
+            ->add('deviceField')
         ;
     }
 

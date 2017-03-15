@@ -23,7 +23,7 @@ class Device
 
     public function __toString()
     {
-        return ($this->getFacility()? $this->getFacility() . ' - ':'') . $this->getName();
+        return ($this->getFacility() ? $this->getFacility() . ' | ':'') . $this->getName();
     }
 
     /**
@@ -54,10 +54,26 @@ class Device
     protected $facility;
 
     /**
-     * @var Field[]
-     * @ORM\OneToMany(targetEntity="Field", mappedBy="device")
+     * @var DeviceField[]
+     * @ORM\OneToMany(targetEntity="DeviceField", mappedBy="device", cascade={"all"})
      */
-    protected $fields;
+    protected $deviceFields;
+
+    /**
+     * Add deviceField
+     *
+     * @param \PaddlereBundle\Entity\DeviceField $deviceField
+     *
+     * @return Device
+     */
+    public function addDeviceField(\PaddlereBundle\Entity\DeviceField $deviceField)
+    {
+        $deviceField->setDevice($this);
+
+        $this->deviceFields[] = $deviceField;
+
+        return $this;
+    }
 
     // bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Device
     /**
@@ -65,7 +81,7 @@ class Device
      */
     public function __construct()
     {
-        $this->fields = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->deviceFields = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -175,36 +191,22 @@ class Device
     }
 
     /**
-     * Add field
+     * Remove deviceField
      *
-     * @param \PaddlereBundle\Entity\Field $field
-     *
-     * @return Device
+     * @param \PaddlereBundle\Entity\DeviceField $deviceField
      */
-    public function addField(\PaddlereBundle\Entity\Field $field)
+    public function removeDeviceField(\PaddlereBundle\Entity\DeviceField $deviceField)
     {
-        $this->fields[] = $field;
-
-        return $this;
+        $this->deviceFields->removeElement($deviceField);
     }
 
     /**
-     * Remove field
-     *
-     * @param \PaddlereBundle\Entity\Field $field
-     */
-    public function removeField(\PaddlereBundle\Entity\Field $field)
-    {
-        $this->fields->removeElement($field);
-    }
-
-    /**
-     * Get fields
+     * Get deviceFields
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getFields()
+    public function getDeviceFields()
     {
-        return $this->fields;
+        return $this->deviceFields;
     }
 }

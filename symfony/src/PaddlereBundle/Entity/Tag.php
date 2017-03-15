@@ -23,7 +23,7 @@ class Tag
 
     public function __toString()
     {
-        return $this->getName();
+        return ($this->getFacility()? $this->getFacility() . ' | ':'') . $this->getName() . ' [' . $this->getSerial() . ']';
     }
 
     /**

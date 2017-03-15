@@ -25,17 +25,25 @@ services:
         tags:
             - { name: sonata.admin, manager_type: orm, group: Setup, label: Facility }
 
+    paddlere.admin.field:
+        class: PaddlereBundle\Admin\FieldAdmin
+        arguments: [~, PaddlereBundle\Entity\Field, PaddlereBundle:CRUD]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Setup, label: Field }
+        calls:
+            - [ setTemplate, [timeline, PaddlereBundle:FieldAdmin:timeline.html.twig]]
+
     paddlere.admin.device:
         class: PaddlereBundle\Admin\DeviceAdmin
         arguments: [~, PaddlereBundle\Entity\Device, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: Setup, label: Device }
 
-    paddlere.admin.field:
-        class: PaddlereBundle\Admin\FieldAdmin
-        arguments: [~, PaddlereBundle\Entity\Field, ~]
+    paddlere.admin.device_field:
+        class: PaddlereBundle\Admin\DeviceFieldAdmin
+        arguments: [~, PaddlereBundle\Entity\DeviceField, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: Setup, label: Field }
+            - { name: sonata.admin, manager_type: orm, group: Setup, label: DeviceField }
 
     paddlere.admin.tag:
         class: PaddlereBundle\Admin\TagAdmin

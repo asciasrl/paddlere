@@ -9,14 +9,13 @@ use Doctrine\ORM\Mapping as ORM;
  *
  * @ORM\Table(name="field",
  *     uniqueConstraints={
- *     @ORM\UniqueConstraint(name="name_device_idx", columns={"device_id","name"})}
+ *         @ORM\UniqueConstraint(name="name_facility_idx", columns={"facility_id","name"})}
  *     )
  * @ORM\Entity
  */
 class Field
 {
     /**
-     * @var int
      *
      * @ORM\Column(name="id", type="guid")
      * @ORM\Id
@@ -26,7 +25,7 @@ class Field
 
     public function __toString()
     {
-        return ($this->getDevice()? $this->getDevice() . ' - ':'') . $this->getName();
+        return ($this->getFacility()? $this->getFacility() . ' | ':'') . $this->getName();
     }
 
     /**
@@ -37,10 +36,16 @@ class Field
     protected $name;
 
     /**
-     * @var Device
-     * @ORM\ManyToOne(targetEntity="Device", inversedBy="fields"))
+     * @var Facility
+     * @ORM\ManyToOne(targetEntity="Facility", inversedBy="fields"))
      */
-    protected $device;
+    protected $facility;
+
+    /**
+     * @var DeviceField
+     * @ORM\OneToOne(targetEntity="DeviceField", mappedBy="field"))
+     */
+    protected $deviceField;
 
     // bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Field
 
@@ -79,26 +84,50 @@ class Field
     }
 
     /**
-     * Set device
+     * Set facility
      *
-     * @param \PaddlereBundle\Entity\Device $device
+     * @param \PaddlereBundle\Entity\Facility $facility
      *
      * @return Field
      */
-    public function setDevice(\PaddlereBundle\Entity\Device $device = null)
+    public function setFacility(\PaddlereBundle\Entity\Facility $facility = null)
     {
-        $this->device = $device;
+        $this->facility = $facility;
 
         return $this;
     }
 
     /**
-     * Get device
+     * Get facility
      *
-     * @return \PaddlereBundle\Entity\Device
+     * @return \PaddlereBundle\Entity\Facility
      */
-    public function getDevice()
+    public function getFacility()
     {
-        return $this->device;
+        return $this->facility;
+    }
+
+    /**
+     * Set deviceField
+     *
+     * @param \PaddlereBundle\Entity\DeviceField $deviceField
+     *
+     * @return Field
+     */
+    public function setDeviceField(\PaddlereBundle\Entity\DeviceField $deviceField = null)
+    {
+        $this->deviceField = $deviceField;
+
+        return $this;
+    }
+
+    /**
+     * Get deviceField
+     *
+     * @return \PaddlereBundle\Entity\DeviceField
+     */
+    public function getDeviceField()
+    {
+        return $this->deviceField;
     }
 }

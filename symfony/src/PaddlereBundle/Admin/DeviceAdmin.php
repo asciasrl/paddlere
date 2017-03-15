@@ -17,6 +17,7 @@ class DeviceAdmin extends AbstractAdmin
             ->addIdentifier('name')
             ->add('serial')
             ->add('facility')
+            //->add('deviceFields')
             ->add('lastseenAt')
         ;
     }
@@ -36,6 +37,12 @@ class DeviceAdmin extends AbstractAdmin
             ->add('name')
             ->add('serial')
             ->add('facility')
+            ->add('deviceFields', 'sonata_type_collection', array(), array(
+                'edit' => 'inline',
+                'inline' => 'table',
+                'sortable' => 'num',
+                'limit' => 6
+            ))
 		;
 	}
 
@@ -46,6 +53,7 @@ class DeviceAdmin extends AbstractAdmin
             ->add('serial')
             ->add('facility')
             ->add('lastseenAt')
+            ->add('deviceFields')
         ;
     }
 

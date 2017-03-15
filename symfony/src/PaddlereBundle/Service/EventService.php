@@ -45,11 +45,11 @@ class EventService
     /**
      * @param $deviceSerial string The serial of the device
      * @param $eventType string Type of event
-     * @param $datetimeFrom \DateTime Starting time
-     * @param $fieldName string Name of the field
-     * @param $datetimeTo \DateTime Starting time
+     * @param $datetimeBegin \DateTime Starting time
+     * @param $fieldNum int Number of the field
+     * @param $datetimeEnd \DateTime Starting time
      */
-    public function addEvent($deviceSerial,$eventType,$datetimeFrom=null,$fieldName='',$datetimeTo=null)
+    public function addEvent($deviceSerial, $eventType, $datetimeBegin=null, $fieldNum=0, $datetimeEnd=null)
     {
         $device = $this->deviceManager->findOneBy(array('serial' => $deviceSerial));
         if (empty($device)) {
@@ -63,22 +63,20 @@ class EventService
 
         $event->setEventType($eventType);
 
-        if (empty($datetimeFrom)) {
-            $event->setDatetimeFrom(new \DateTime());
+        if (empty($datetimeBegin)) {
+            $event->setDatetimeBegin(new \DateTime());
         } else {
-            $event->setDatetimeFrom($datetimeFrom);
+            $event->setDatetimeBegin($datetimeBegin);
         }
-        if (empty($datetimeTo)) {
-            $event->setDatetimeTo($event->getDatetimeFrom());
-        } else {
-            $event->setDatetimeTo($datetimeTo);
+        if (!empty($datetimeEnd)) {
+            $event->setDatetimeEnd($datetimeEnd);
         }
 
-        if (!empty($fieldName)) {
+        if ($fieldNum > 0) {
             /** @var Field $field */
-            $field = $this->fieldManager->findOneBy(array('device' => $device, 'name' => $fieldName));
+            $field = $this->fieldManager->findOneByDeviceField($device,$fieldNum);
             if (empty($field)) {
-                $this->logger->error(sprintf("Field with name '%s' not found for device '%s'", $fieldName,$device));
+                $this->logger->error(sprintf("Field n.%d not found for device '%s'", $fieldNum,$device));
             } else {
                 $event->setField($field);
             }

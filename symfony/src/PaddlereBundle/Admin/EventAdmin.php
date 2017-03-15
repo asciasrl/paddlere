@@ -3,6 +3,7 @@
 namespace PaddlereBundle\Admin;
 
 use PaddlereBundle\Entity\Event;
+use PaddlereBundle\PaddlereBundle;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -12,12 +13,20 @@ use Sonata\AdminBundle\Show\ShowMapper;
 class EventAdmin extends AbstractAdmin
 {
 
+    protected $datagridValues = array(
+        // reverse order (default = 'ASC')
+        '_sort_order' => 'DESC',
+
+        // name of the ordered field (default = the model's id field, if any)
+        '_sort_by' => 'datetimeBegin',
+    );
+
     protected function configureListFields(ListMapper $mapper)
     {
         $mapper
             ->add('eventType')
-            ->addIdentifier('datetimeFrom')
-            ->add('datetimeTo')
+            ->addIdentifier('datetimeBegin')
+            ->add('datetimeEnd')
             ->add('duration')
             ->add('field')
         ;
@@ -36,8 +45,8 @@ class EventAdmin extends AbstractAdmin
 	{
 		$mapper
             ->add('eventType')
-            ->add('datetimeFrom')
-            ->add('datetimeTo')
+            ->add('datetimeBegin')
+            ->add('datetimeEnd')
             ->add('field')
 		;
 	}
@@ -46,10 +55,12 @@ class EventAdmin extends AbstractAdmin
     {
         $mapper
             ->add('eventType')
-            ->add('datetimeFrom')
-            ->add('datetimeTo')
+            ->add('datetimeBegin', null, array('format' => 'r'))
+            ->add('datetimeEnd', null, array('format' => 'r'))
             ->add('duration')
+            ->add('device')
             ->add('field')
+            ->add('tag')
         ;
     }
 
@@ -57,13 +68,13 @@ class EventAdmin extends AbstractAdmin
     {
 
         return parent::getNewInstance()
-            ->setDatetimeFrom(new \DateTime())
-            ->setDatetimeTo(new \DateTime());
+            ->setDatetimeBegin(new \DateTime())
+            ->setDatetimeEnd(new \DateTime());
         /** @var Event $event */
 /*
         $event = parent::getNewInstance();
 
-        $event->setDatetimeFrom(new \DateTime());
+        $event->setDatetimeBegin(new \DateTime());
 
         return $event;
 */

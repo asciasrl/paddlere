@@ -32,19 +32,13 @@ class Event
      * @var \DateTime
      * @ORM\Column(type="datetime")
      */
-    protected $datetimeFrom;
+    protected $datetimeBegin;
 
     /**
      * @var \DateTime
      * @ORM\Column(type="datetime", nullable=true)
      */
-    protected $datetimeTo;
-
-    /**
-     * @var int Durata arrotondata in minuti
-     * @ORM\Column(type="smallint", nullable=true)
-     */
-    protected $duration;
+    protected $datetimeEnd;
 
     /**
      * @var Device
@@ -59,19 +53,25 @@ class Event
     protected $field;
 
     /**
-     * @ORM\PreUpdate
-     * @ORM\PrePersist
+     * @var Field
+     * @ORM\ManyToOne(targetEntity="Tag")
      */
-    public function doSetDuration()
+    protected $tag;
+
+    public function getDuration()
     {
-        if (!is_null($this->getDatetimeTo())) {
-            $interval =  $this->getDatetimeFrom()->diff($this->getDatetimeTo());
-            $this->setDuration(round(($interval->h*3600+$interval->i*60+$interval->s)/60));
+        if (!is_null($this->getDatetimeEnd())) {
+            $interval =  $this->getDatetimeBegin()->diff($this->getDatetimeEnd());
+            return round(($interval->h*3600+$interval->i*60+$interval->s)/60);
         }
     }
 
-    // bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Event
+    public function __toString()
+    {
+        return $this->getDatetimeBegin()->format('c') . ' | ' . $this->getField();
+    }
 
+    // bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Event
 
     /**
      * Get id
@@ -108,75 +108,75 @@ class Event
     }
 
     /**
-     * Set datetimeFrom
+     * Set datetimeBegin
      *
-     * @param \DateTime $datetimeFrom
+     * @param \DateTime $datetimeBegin
      *
      * @return Event
      */
-    public function setDatetimeFrom($datetimeFrom)
+    public function setDatetimeBegin($datetimeBegin)
     {
-        $this->datetimeFrom = $datetimeFrom;
+        $this->datetimeBegin = $datetimeBegin;
 
         return $this;
     }
 
     /**
-     * Get datetimeFrom
+     * Get datetimeBegin
      *
      * @return \DateTime
      */
-    public function getDatetimeFrom()
+    public function getDatetimeBegin()
     {
-        return $this->datetimeFrom;
+        return $this->datetimeBegin;
     }
 
     /**
-     * Set datetimeTo
+     * Set datetimeEnd
      *
-     * @param \DateTime $datetimeTo
+     * @param \DateTime $datetimeEnd
      *
      * @return Event
      */
-    public function setDatetimeTo($datetimeTo)
+    public function setDatetimeEnd($datetimeEnd)
     {
-        $this->datetimeTo = $datetimeTo;
+        $this->datetimeEnd = $datetimeEnd;
 
         return $this;
     }
 
     /**
-     * Get datetimeTo
+     * Get datetimeEnd
      *
      * @return \DateTime
      */
-    public function getDatetimeTo()
+    public function getDatetimeEnd()
     {
-        return $this->datetimeTo;
+        return $this->datetimeEnd;
     }
 
     /**
-     * Set duration
+     * Set device
      *
-     * @param integer $duration
+     * @param \PaddlereBundle\Entity\Device $device
      *
      * @return Event
      */
-    public function setDuration($duration)
+    public function setDevice(\PaddlereBundle\Entity\Device $device = null)
     {
-        $this->duration = $duration;
+        $this->device = $device;
 
         return $this;
     }
 
     /**
-     * Get duration
+     * Get device
      *
-     * @return integer
+     * @return \PaddlereBundle\Entity\Device
      */
-    public function getDuration()
+    public function getDevice()
     {
-        return $this->duration;
+        return $this->device;
     }
 
     /**
@@ -204,26 +204,26 @@ class Event
     }
 
     /**
-     * Set device
+     * Set tag
      *
-     * @param \PaddlereBundle\Entity\Device $device
+     * @param \PaddlereBundle\Entity\Tag $tag
      *
      * @return Event
      */
-    public function setDevice(\PaddlereBundle\Entity\Device $device = null)
+    public function setTag(\PaddlereBundle\Entity\Tag $tag = null)
     {
-        $this->device = $device;
+        $this->tag = $tag;
 
         return $this;
     }
 
     /**
-     * Get device
+     * Get tag
      *
-     * @return \PaddlereBundle\Entity\Device
+     * @return \PaddlereBundle\Entity\Tag
      */
-    public function getDevice()
+    public function getTag()
     {
-        return $this->device;
+        return $this->tag;
     }
 }

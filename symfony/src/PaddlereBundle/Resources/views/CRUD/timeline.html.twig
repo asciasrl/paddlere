@@ -1,0 +1,58 @@
+{% extends 'SonataAdminBundle::standard_layout.html.twig' %}
+
+{% block sonata_admin_content %}
+
+    {{ field }}
+
+    <div id="form">
+        {{ form_start(form) }}
+        {{ form_widget(form) }}
+        <input type="submit" value="Show"
+               class="btn btn-default" />
+        {{ form_end(form) }}
+    </div>
+
+    <div id="timeline"></div>
+
+{% endblock %}
+
+{% block javascripts %}
+    <script src="http://code.jquery.com/jquery-3.1.1.min.js"></script>
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <script type="text/javascript">
+        google.charts.load("current", {packages:['corechart','timeline'], language: 'it'});
+        google.charts.setOnLoadCallback(drawChart);
+        function drawChart() {
+
+            var container = $( "#timeline" )[ 0 ];
+            var chart = new google.visualization.Timeline(container);
+            var dataTable = new google.visualization.DataTable();
+            dataTable.addColumn({ type: 'string', id: 'Day' });
+            dataTable.addColumn({ type: 'string', id: 'Comment' });
+            dataTable.addColumn({ type: 'date', id: 'Start' });
+            dataTable.addColumn({ type: 'date', id: 'End' });
+            dataTable.addRows([
+                {% for event in events %}
+
+                ['{{ event.datetimeBegin|date("D d/m/Y") }}', '{{ event.eventType }}', new Date({{ event.datetimeBegin|date("2000,01,01,H,i,s") }}), new Date({{ event.datetimeEnd|default(event.datetimeBegin)|date("2000,01,01,H,i,s") }})]{%  if not loop.last %},
+
+                {#
+                ['{{ event.campo }}', '{{ event.campo }}', new Date('{{ event.inizio|date("c") }}'), new Date('{{ event.fine|date("c") }}')]{%  if not loop.last %},
+                #}
+                {% endif %}
+                {% endfor %}
+            ]);
+
+            var options = {
+                //'title':'How Much Pizza I Ate Last Night',
+                'height':'inherit',
+                //timeline: { singleColor: 'cyan' },
+                avoidOverlappingGridLines: true,
+                //colors: [ 'white','green', 'red']
+            };
+
+            chart.draw(dataTable,options);
+        }
+    </script>
+{% endblock %}

@@ -34,6 +34,12 @@ class Facility
     protected $name;
 
     /**
+     * @var Field[]
+     * @ORM\OneToMany(targetEntity="Field", mappedBy="facility"))
+     */
+    protected $fields;
+
+    /**
      * @var Device[]
      * @ORM\OneToMany(targetEntity="Device", mappedBy="facility"))
      */
@@ -51,6 +57,7 @@ class Facility
      */
     public function __construct()
     {
+        $this->fields = new \Doctrine\Common\Collections\ArrayCollection();
         $this->devices = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tags = new \Doctrine\Common\Collections\ArrayCollection();
     }
@@ -87,6 +94,40 @@ class Facility
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * Add field
+     *
+     * @param \PaddlereBundle\Entity\Field $field
+     *
+     * @return Facility
+     */
+    public function addField(\PaddlereBundle\Entity\Field $field)
+    {
+        $this->fields[] = $field;
+
+        return $this;
+    }
+
+    /**
+     * Remove field
+     *
+     * @param \PaddlereBundle\Entity\Field $field
+     */
+    public function removeField(\PaddlereBundle\Entity\Field $field)
+    {
+        $this->fields->removeElement($field);
+    }
+
+    /**
+     * Get fields
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getFields()
+    {
+        return $this->fields;
     }
 
     /**

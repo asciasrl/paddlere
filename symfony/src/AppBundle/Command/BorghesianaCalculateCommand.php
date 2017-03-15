@@ -95,7 +95,8 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
                 $inizio->setDurata($durata);
                 $inizi[$campo] = null;
 
-                $eventService->addEvent('4981104', 'Utilizzo', $inizio->getDataora(), $campo, $log->getDataora());
+                list($campoNum) = sscanf($campo,"campo %d");
+                $eventService->addEvent('4981104', 'Affitto', $inizio->getDataora(), $campoNum, $log->getDataora());
             }
             if ($tipo == "Abuso") {
                 $output->writeLn($log->getDataora()->format('c') . ' ' . $tipo . ' for ' . $campo);
@@ -103,7 +104,9 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
                 $log->setCampo($campo);
                 $log->setInizio($log->getDataora());
                 $log->setFine($log->getDataora());
-                $eventService->addEvent('4981104', $tipo, $log->getDataora(),$campo);
+
+                list($campoNum) = sscanf($campo,"campo %d");
+                $eventService->addEvent('4981104', $tipo, $log->getDataora(),$campoNum);
             }
             $em->flush();
         }
