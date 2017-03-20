@@ -45,8 +45,14 @@ class EventAdmin extends AbstractAdmin
 	{
 		$mapper
             ->add('eventType')
-            ->add('datetimeBegin')
-            ->add('datetimeEnd')
+            ->add('datetimeBegin', 'sonata_type_datetime_picker', array(
+                'format'                => 'Y-MM-dd H:mm:ss',
+                'dp_side_by_side'       => true,
+            ))
+            ->add('datetimeEnd', 'sonata_type_datetime_picker', array(
+                'format'                => 'Y-MM-dd H:mm:ss',
+                'dp_side_by_side'       => true,
+            ))
             ->add('field')
 		;
 	}
