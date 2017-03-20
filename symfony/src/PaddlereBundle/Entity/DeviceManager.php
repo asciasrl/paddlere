@@ -16,10 +16,14 @@ class DeviceManager extends BaseEntityManager
     /**
      * Updates lastseen of the device
      * @param Device $device
+     * @param \DateTime $dateTime default now
      */
-    public function ping(Device $device)
+    public function ping(Device $device, \DateTime $dateTime=null)
     {
-        $device->setLastseenAt(new \DateTime());
+        if ($dateTime === null) {
+            $dateTime = new \DateTime();
+        }
+        $device->setLastseenAt($dateTime);
         $this->getEntityManager()->flush();
     }
 }

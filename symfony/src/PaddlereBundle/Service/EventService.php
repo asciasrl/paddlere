@@ -56,6 +56,10 @@ class EventService
             $this->logger->critical(sprintf("Device with serial '%s' not found", $deviceSerial));
             return false;
         }
+        $this->deviceManager->ping($device,$datetimeBegin);
+        if ($eventType == 'Dummy') {
+            return; // ping only
+        }
 
         /** @var Event $event */
         $event = $this->eventManager->create();

@@ -56,6 +56,7 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
                 $log->setTipo($tipo);
                 $log->setInizio($log->getDataora());
                 $log->setFine($log->getDataora());
+                $eventService->addEvent('4981104', $tipo, $log->getDataora());
             }
             if ($tipo == "Inizio") {
                 if (!array_key_exists($campo,$inizi) || $inizi[$campo]==null) {
