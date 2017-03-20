@@ -2,7 +2,7 @@
 
 {% block sonata_admin_content %}
 
-    {{ field }}
+    <h1><a href="{{ path('admin_paddlere_field_show',{'id': field.id}) }}">{{ field }}</a></h1>
 
     <div id="form">
         {{ form_start(form) }}
@@ -33,7 +33,12 @@
             dataTable.addColumn({ type: 'date', id: 'Start' });
             dataTable.addColumn({ type: 'date', id: 'End' });
             dataTable.addRows([
+                {% set colors = "'green','red'" %}
                 {% for event in events %}
+
+                {% if loop.first and event.eventType == 'Abuso' %}
+                    {% set colors = "'red','green'" %}
+                {% endif %}
 
                 ['{{ event.datetimeBegin|date("D d/m/Y") }}', '{{ event.eventType }}', new Date({{ event.datetimeBegin|date("2000,01,01,H,i,s") }}), new Date({{ event.datetimeEnd|default(event.datetimeBegin)|date("2000,01,01,H,i,s") }})]{%  if not loop.last %},
 
@@ -46,11 +51,17 @@
 
             var options = {
                 //'title':'How Much Pizza I Ate Last Night',
-                'height':'inherit',
+                //'height':'inherit',
                 //timeline: { singleColor: 'cyan' },
                 avoidOverlappingGridLines: true,
-                //colors: [ 'white','green', 'red']
+                colors: [ {{ colors|raw }}]
             };
+
+            chart.draw(dataTable,options);
+
+            var realheight=parseInt($("#timeline div:first-child div:first-child div:first-child div svg").attr( "height"))+70;
+
+            options.height=realheight;
 
             chart.draw(dataTable,options);
         }
