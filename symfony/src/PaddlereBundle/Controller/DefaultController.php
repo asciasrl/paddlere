@@ -79,9 +79,43 @@ class DefaultController extends Controller
                     return new Response($msg,404);
                 } else {
                     $tagManager->ping($tag);
-                    $msg = sprintf("%s;%d;%d;%d;%s",$tag->getSerial(),$tag->getCredit(),$tag->getFun(),$tag->getEnabled(),$tag->getName());
-                    $log->info($msg);
+                    $msg = sprintf("%s;%s;%d;%d;%d;%s",$tag->getSerial(),$tag->getPassword(),$tag->getCredit(),$tag->getFun(),$tag->getEnabled(),$tag->getName());
+                    $log->info("Read TAG: " . $msg);
                     return new Response($msg);
+                }
+                break;
+
+            case 11: // TAG credit usage
+
+                /** @var TagManager $tagManager */
+                $tagManager = $this->get('paddlere.manager.tag');
+                /** @var Tag $tag */
+                $tag = $tagManager->findOneBy(array('serial' => $param));
+                if (empty($tag)) {
+                    $msg = sprintf("Tag '%s' not found",$param);
+                    $log->error($msg);
+                    return new Response($msg,404);
+                } else {
+                    $tagManager->ping($tag);
+
+                    $oldCredit = $tag->getCredit();
+                    $newCredit = $request->query->getInt('Credit',0);
+                    $useCredit = $request->query->getInt('Use',0);
+
+                    $msg = sprintf("Tag=%s Credit old=%d use=%d new=%d",$tag->getSerial(),$oldCredit,$useCredit,$newCredit);
+
+                    if (($newCredit - $oldCredit == $useCredit) & ($useCredit != 0)) {
+                        $log->info($msg);
+                        $tag->setCredit($newCredit);
+                        $tagManager->save($tag);
+                        $msg = sprintf("%s;%s;%d;%d;%d;%s",$tag->getSerial(),$tag->getPassword(),$tag->getCredit(),$tag->getFun(),$tag->getEnabled(),$tag->getName());
+                        $log->info("Read TAG: " . $msg);
+                        return new Response($msg);
+                    } else {
+                        $log->error("Invalid credit usage: " . $msg);
+                        return new Response("Invalid credit amounts",404);
+                    }
+
                 }
                 break;
 

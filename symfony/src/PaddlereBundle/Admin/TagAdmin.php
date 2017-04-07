@@ -40,6 +40,7 @@ class TagAdmin extends AbstractAdmin
 		$mapper
             ->add('name')
             ->add('serial')
+            ->add('password')
             ->add('facility')
             ->add('credit')
             ->add('fun')

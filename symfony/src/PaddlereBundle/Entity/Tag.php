@@ -7,7 +7,10 @@ use Doctrine\ORM\Mapping as ORM;
 /**
  * Device
  *
- * @ORM\Table(name="tag")
+ * @ORM\Table(name="tag",
+ *     uniqueConstraints={
+ *          @ORM\UniqueConstraint(name="facility_name", columns={"name", "facility_id"})
+ *     })
  * @ORM\Entity
  */
 class Tag
@@ -29,14 +32,21 @@ class Tag
     /**
      * @var string
      *
-     * @ORM\Column(name="serial", type="string", unique=true)
+     * @ORM\Column(name="serial", type="string", length=12, unique=true)
      */
     protected $serial;
 
     /**
      * @var string
      *
-     * @ORM\Column(name="name", type="string", length=255, unique=true)
+     * @ORM\Column(name="password", type="string", length=8)
+     */
+    protected $password;
+
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="name", type="string", length=16)
      */
     protected $name;
 
@@ -108,6 +118,30 @@ class Tag
     public function getSerial()
     {
         return $this->serial;
+    }
+
+    /**
+     * Set password
+     *
+     * @param string $password
+     *
+     * @return Tag
+     */
+    public function setPassword($password)
+    {
+        $this->password = $password;
+
+        return $this;
+    }
+
+    /**
+     * Get password
+     *
+     * @return string
+     */
+    public function getPassword()
+    {
+        return $this->password;
     }
 
     /**
