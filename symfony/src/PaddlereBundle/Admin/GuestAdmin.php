@@ -8,15 +8,16 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
 
-class TagAdmin extends AbstractAdmin
+class GuestAdmin extends AbstractAdmin
 {
 
     protected function configureListFields(ListMapper $mapper)
     {
         $mapper
-            ->addIdentifier('serial')
+            ->addIdentifier('name')
             ->add('facility')
-            ->add('guest')
+            ->add('credit')
+            ->add('fun')
             ->add('enabled')
             ->add('lastseenAt')
         ;
@@ -25,9 +26,10 @@ class TagAdmin extends AbstractAdmin
     protected function configureDatagridFilters(DatagridMapper $mapper)
     {
         $mapper
+            ->add('name')
             ->add('serial')
             ->add('facility')
-            ->add('guest')
+            ->add('fun')
             ->add('enabled')
         ;
     }
@@ -35,9 +37,12 @@ class TagAdmin extends AbstractAdmin
 	protected function configureFormFields(FormMapper $mapper)
 	{
 		$mapper
+            ->add('name')
             ->add('serial')
+            ->add('password')
             ->add('facility')
-            ->add('guest')
+            ->add('credit')
+            ->add('fun')
             ->add('enabled')
 		;
 	}
@@ -45,9 +50,11 @@ class TagAdmin extends AbstractAdmin
     protected function configureShowFields(ShowMapper $mapper)
     {
         $mapper
+            ->add('name')
             ->add('serial')
             ->add('facility')
-            ->add('guest')
+            ->add('credit')
+            ->add('fun')
             ->add('enabled')
             ->add('lastseenAt')
         ;

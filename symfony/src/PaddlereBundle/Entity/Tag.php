@@ -26,7 +26,7 @@ class Tag
 
     public function __toString()
     {
-        return ($this->getFacility()? $this->getFacility() . ' | ':'') . $this->getName() . ' [' . $this->getSerial() . ']';
+        return $this->getSerial();
     }
 
     /**
@@ -35,6 +35,12 @@ class Tag
      * @ORM\Column(name="serial", type="string", length=12, unique=true)
      */
     protected $serial;
+
+    /**
+     * @var Guest
+     * @ORM\ManyToOne(targetEntity="Guest", inversedBy="Tag")
+     */
+    protected $guest;
 
     /**
      * @var string
@@ -262,6 +268,30 @@ class Tag
     public function getLastseenAt()
     {
         return $this->lastseenAt;
+    }
+
+    /**
+     * Set guest
+     *
+     * @param \PaddlereBundle\Entity\Guest $guest
+     *
+     * @return Tag
+     */
+    public function setGuest(\PaddlereBundle\Entity\Guest $guest = null)
+    {
+        $this->guest = $guest;
+
+        return $this;
+    }
+
+    /**
+     * Get guest
+     *
+     * @return \PaddlereBundle\Entity\Guest
+     */
+    public function getGuest()
+    {
+        return $this->guest;
     }
 
     /**

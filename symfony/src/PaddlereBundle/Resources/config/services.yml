@@ -45,6 +45,12 @@ services:
         tags:
             - { name: sonata.admin, manager_type: orm, group: Setup, label: DeviceField }
 
+    paddlere.admin.guest:
+        class: PaddlereBundle\Admin\GuestAdmin
+        arguments: [~, PaddlereBundle\Entity\Guest, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Setup, label: Guest }
+
     paddlere.admin.tag:
         class: PaddlereBundle\Admin\TagAdmin
         arguments: [~, PaddlereBundle\Entity\Tag, ~]

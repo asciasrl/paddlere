@@ -64,7 +64,7 @@ class DefaultController extends Controller
         switch ($operation) {
             case 1: // no operation- ping only
 
-                return new Response('',204);
+                return new Response(sprintf('1:%s'),$device->getLastseenAt());
                 break;
 
             case 10: // Read a tag
@@ -79,7 +79,7 @@ class DefaultController extends Controller
                     return new Response($msg,404);
                 } else {
                     $tagManager->ping($tag);
-                    $msg = sprintf("%s;%s;%d;%d;%d;%s",$tag->getSerial(),$tag->getPassword(),$tag->getCredit(),$tag->getFun(),$tag->getEnabled(),$tag->getName());
+                    $msg = sprintf("10=%s;%s;%d;%d;%d;%s",$tag->getSerial(),$tag->getPassword(),$tag->getCredit(),$tag->getFun(),$tag->getEnabled(),$tag->getName());
                     $log->info("Read TAG: " . $msg);
                     return new Response($msg);
                 }
