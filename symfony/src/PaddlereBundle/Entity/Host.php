@@ -26,13 +26,13 @@ class Host
 
     public function __toString()
     {
-        return ($this->getFacility()? $this->getFacility() . ' | ':'') . $this->getName() . ' [' . $this->getSerial() . ']';
+        return ($this->getFacility()? $this->getFacility() . ' | ':'') . $this->getName();
     }
 
     /**
      * @var string
      *
-     * @ORM\Column(name="password", type="string", length=8)
+     * @ORM\Column(name="password", type="string", length=8, nullable=true)
      */
     protected $password;
 
@@ -53,6 +53,7 @@ class Host
     /**
      * @var Facility
      * @ORM\ManyToOne(targetEntity="Facility", inversedBy="tags")
+     * @ORM\JoinColumn(name="facility_id", referencedColumnName="id", nullable=false)
      */
     protected $facility;
 

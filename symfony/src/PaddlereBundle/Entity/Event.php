@@ -58,6 +58,24 @@ class Event
      */
     protected $tag;
 
+    /**
+     * @var Guest
+     * @ORM\ManyToOne(targetEntity="Guest")
+     */
+    protected $guest;
+
+    /**
+     * @var Host
+     * @ORM\ManyToOne(targetEntity="Host")
+     */
+    protected $host;
+
+    /**
+     * @var Transaction[]
+     * @ORM\OneToMany(targetEntity="Transaction", mappedBy="event")
+     */
+    protected $transactions;
+
     public function getDuration()
     {
         if (!is_null($this->getDatetimeEnd())) {
@@ -225,5 +243,94 @@ class Event
     public function getTag()
     {
         return $this->tag;
+    }
+
+    /**
+     * Set guest
+     *
+     * @param \PaddlereBundle\Entity\Guest $guest
+     *
+     * @return Event
+     */
+    public function setGuest(\PaddlereBundle\Entity\Guest $guest = null)
+    {
+        $this->guest = $guest;
+
+        return $this;
+    }
+
+    /**
+     * Get guest
+     *
+     * @return \PaddlereBundle\Entity\Guest
+     */
+    public function getGuest()
+    {
+        return $this->guest;
+    }
+
+    /**
+     * Set host
+     *
+     * @param \PaddlereBundle\Entity\Host $host
+     *
+     * @return Event
+     */
+    public function setHost(\PaddlereBundle\Entity\Host $host = null)
+    {
+        $this->host = $host;
+
+        return $this;
+    }
+
+    /**
+     * Get host
+     *
+     * @return \PaddlereBundle\Entity\Host
+     */
+    public function getHost()
+    {
+        return $this->host;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->transactions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Add transaction
+     *
+     * @param \PaddlereBundle\Entity\Transaction $transaction
+     *
+     * @return Event
+     */
+    public function addTransaction(\PaddlereBundle\Entity\Transaction $transaction)
+    {
+        $this->transactions[] = $transaction;
+
+        return $this;
+    }
+
+    /**
+     * Remove transaction
+     *
+     * @param \PaddlereBundle\Entity\Transaction $transaction
+     */
+    public function removeTransaction(\PaddlereBundle\Entity\Transaction $transaction)
+    {
+        $this->transactions->removeElement($transaction);
+    }
+
+    /**
+     * Get transactions
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getTransactions()
+    {
+        return $this->transactions;
     }
 }

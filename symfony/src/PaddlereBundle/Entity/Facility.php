@@ -8,7 +8,7 @@ use Doctrine\ORM\Mapping as ORM;
  * Device
  *
  * @ORM\Table(name="facility")
- * @ORM\Entity
+ * @ORM\Entity(repositoryClass="PaddlereBundle\Repository\FacilityRepository")
  */
 class Facility
 {
@@ -51,6 +51,25 @@ class Facility
      */
     protected $tags;
 
+    /**
+     * @var Guest[]
+     * @ORM\OneToMany(targetEntity="Guest", mappedBy="facility"))
+     */
+    protected $guests;
+
+    /**
+     * @var Host[]
+     * @ORM\OneToMany(targetEntity="Host", mappedBy="facility"))
+     */
+    protected $hosts;
+
+    /**
+     * @var boolean
+     *
+     * @ORM\Column(name="enabled", type="boolean")
+     */
+    protected $enabled;
+
     // bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Facility
     /**
      * Constructor
@@ -60,6 +79,8 @@ class Facility
         $this->fields = new \Doctrine\Common\Collections\ArrayCollection();
         $this->devices = new \Doctrine\Common\Collections\ArrayCollection();
         $this->tags = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->guests = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->hosts = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -196,5 +217,97 @@ class Facility
     public function getTags()
     {
         return $this->tags;
+    }
+
+    /**
+     * Add guest
+     *
+     * @param \PaddlereBundle\Entity\Guest $guest
+     *
+     * @return Facility
+     */
+    public function addGuest(\PaddlereBundle\Entity\Guest $guest)
+    {
+        $this->guests[] = $guest;
+
+        return $this;
+    }
+
+    /**
+     * Remove guest
+     *
+     * @param \PaddlereBundle\Entity\Guest $guest
+     */
+    public function removeGuest(\PaddlereBundle\Entity\Guest $guest)
+    {
+        $this->guests->removeElement($guest);
+    }
+
+    /**
+     * Get guests
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getGuests()
+    {
+        return $this->guests;
+    }
+
+    /**
+     * Add host
+     *
+     * @param \PaddlereBundle\Entity\Host $host
+     *
+     * @return Facility
+     */
+    public function addHost(\PaddlereBundle\Entity\Host $host)
+    {
+        $this->hosts[] = $host;
+
+        return $this;
+    }
+
+    /**
+     * Remove host
+     *
+     * @param \PaddlereBundle\Entity\Host $host
+     */
+    public function removeHost(\PaddlereBundle\Entity\Host $host)
+    {
+        $this->hosts->removeElement($host);
+    }
+
+    /**
+     * Get hosts
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getHosts()
+    {
+        return $this->hosts;
+    }
+
+    /**
+     * Set enabled
+     *
+     * @param boolean $enabled
+     *
+     * @return Facility
+     */
+    public function setEnabled($enabled)
+    {
+        $this->enabled = $enabled;
+
+        return $this;
+    }
+
+    /**
+     * Get enabled
+     *
+     * @return boolean
+     */
+    public function getEnabled()
+    {
+        return $this->enabled;
     }
 }

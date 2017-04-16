@@ -2,6 +2,8 @@
 
 namespace PaddlereBundle\Admin;
 
+use Doctrine\ORM\QueryBuilder;
+use PaddlereBundle\Entity\Guest;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -16,6 +18,7 @@ class GuestAdmin extends AbstractAdmin
         $mapper
             ->addIdentifier('name')
             ->add('facility')
+            ->add('tags')
             ->add('credit')
             ->add('fun')
             ->add('enabled')
@@ -27,9 +30,9 @@ class GuestAdmin extends AbstractAdmin
     {
         $mapper
             ->add('name')
-            ->add('serial')
             ->add('facility')
             ->add('fun')
+            ->add('tags')
             ->add('enabled')
         ;
     }
@@ -38,11 +41,28 @@ class GuestAdmin extends AbstractAdmin
 	{
 		$mapper
             ->add('name')
-            ->add('serial')
-            ->add('password')
             ->add('facility')
             ->add('credit')
-            ->add('fun')
+            ->add('fun');
+
+		/** @var Guest $guest */
+        $guest = $this->getSubject();
+        if (!is_null($guest->getId()) && !is_null($guest->getFacility())) {
+            /** @var QueryBuilder $qb */
+            $qb = $this->getModelManager()->getEntityManager('PaddlereBundle:Tag')->createQueryBuilder('t');
+            $qb->select('t')
+                ->from('PaddlereBundle:Tag','t')
+                ->where($qb->expr()->orX($qb->expr()->isNull('t.guest'),$qb->expr()->eq('t.guest',':guest')))
+                ->andWhere($qb->expr()->eq('t.facility',':facility'))
+                ->setParameters(array(
+                    'guest' => $guest,
+                    'facility' => $guest->getFacility()
+                    ));
+            $mapper
+                ->add('tags', null, array('by_reference' => false, 'query_builder' => $qb));
+        }
+
+        $mapper
             ->add('enabled')
 		;
 	}
@@ -51,13 +71,22 @@ class GuestAdmin extends AbstractAdmin
     {
         $mapper
             ->add('name')
-            ->add('serial')
             ->add('facility')
             ->add('credit')
             ->add('fun')
+            ->add('tags')
             ->add('enabled')
             ->add('lastseenAt')
         ;
+    }
+
+    public function getNewInstance()
+    {
+        /** @var Guest $guest */
+        $guest = parent::getNewInstance();
+        $guest->setEnabled(true);
+        $guest->setCredit(0);
+        return $guest;
     }
 
 }

@@ -53,6 +53,12 @@ class Transaction
     protected $guest;
 
     /**
+     * @var Event
+     * @ORM\ManyToOne(targetEntity="Event",cascade={"persist"}, inversedBy="transactions")
+     */
+    protected $event;
+
+    /**
      * @var int
      *
      * @ORM\Column(name="amount", type="integer")
@@ -72,6 +78,11 @@ class Transaction
      * @ORM\Column(name="created_at", type="datetime", nullable=true)
      */
     protected $createdAt;
+
+    public function __toString()
+    {
+        return $this->getAccountedAt()->format('c') . ' | ' . $this->getAmount();
+    }
 
     // bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Transaction
 
@@ -275,5 +286,29 @@ class Transaction
     public function getGuest()
     {
         return $this->guest;
+    }
+
+    /**
+     * Set event
+     *
+     * @param \PaddlereBundle\Entity\Event $event
+     *
+     * @return Transaction
+     */
+    public function setEvent(\PaddlereBundle\Entity\Event $event = null)
+    {
+        $this->event = $event;
+
+        return $this;
+    }
+
+    /**
+     * Get event
+     *
+     * @return \PaddlereBundle\Entity\Event
+     */
+    public function getEvent()
+    {
+        return $this->event;
     }
 }

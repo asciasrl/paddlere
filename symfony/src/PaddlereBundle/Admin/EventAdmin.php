@@ -8,6 +8,7 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
 
 class EventAdmin extends AbstractAdmin
@@ -21,6 +22,11 @@ class EventAdmin extends AbstractAdmin
         '_sort_by' => 'datetimeBegin',
     );
 
+    public function configureRoutes(RouteCollection $collection)  {
+        $collection->remove('edit');
+        $collection->remove('create');
+    }
+
     protected function configureListFields(ListMapper $mapper)
     {
         $mapper
@@ -28,7 +34,9 @@ class EventAdmin extends AbstractAdmin
             ->addIdentifier('datetimeBegin')
             ->add('datetimeEnd')
             ->add('duration')
-            ->add('field')
+            ->add('field.facility', null, array('label' => 'Facility', 'associated_property' => 'name'))
+            ->add('field', null, array('associated_property' => 'name'))
+            ->add('guest', null, array('associated_property' => 'name'))
         ;
     }
 
@@ -36,8 +44,8 @@ class EventAdmin extends AbstractAdmin
     {
         $mapper
             ->add('eventType')
+            ->add('field.facility')
             ->add('field')
-            ->add('field.device.facility')
         ;
     }
 
@@ -67,23 +75,17 @@ class EventAdmin extends AbstractAdmin
             ->add('device')
             ->add('field')
             ->add('tag')
+            ->add('guest')
+            ->add('host')
+            ->add('transactions')
         ;
     }
 
     public function getNewInstance()
     {
-
         return parent::getNewInstance()
             ->setDatetimeBegin(new \DateTime())
             ->setDatetimeEnd(new \DateTime());
-        /** @var Event $event */
-/*
-        $event = parent::getNewInstance();
-
-        $event->setDatetimeBegin(new \DateTime());
-
-        return $event;
-*/
     }
 
 

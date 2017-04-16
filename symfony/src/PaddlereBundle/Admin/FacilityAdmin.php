@@ -18,6 +18,7 @@ class FacilityAdmin extends AbstractAdmin
             ->addIdentifier('name')
             ->add('devices', null, array('associated_property' => 'name'))
             ->add('fields', null, array('associated_property' => 'name'))
+            ->add('enabled')
         ;
     }
 
@@ -27,6 +28,7 @@ class FacilityAdmin extends AbstractAdmin
             ->add('name')
             ->add('devices')
             ->add('tags')
+            ->add('enabled')
         ;
     }
 
@@ -34,6 +36,7 @@ class FacilityAdmin extends AbstractAdmin
 	{
 		$mapper
             ->add('name')
+            ->add('enabled')
 		;
 	}
 
@@ -43,7 +46,10 @@ class FacilityAdmin extends AbstractAdmin
             ->add('name')
             ->add('devices', null, array('associated_property' => 'name'))
             ->add('fields', null, array('associated_property' => 'name'))
-            ->add('tags', null, array('associated_property' => 'name'))
+            ->add('tags', null, array('associated_property' => 'serial'))
+            ->add('guests', null, array('associated_property' => 'name'))
+            ->add('hosts', null, array('associated_property' => 'name'))
+            ->add('enabled')
         ;
     }
 

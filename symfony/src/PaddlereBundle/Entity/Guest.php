@@ -3,6 +3,8 @@
 namespace PaddlereBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
+use Symfony\Bridge\Doctrine\Validator\Constraints\UniqueEntity;
 
 /**
  * Device
@@ -12,6 +14,9 @@ use Doctrine\ORM\Mapping as ORM;
  *          @ORM\UniqueConstraint(name="facility_name", columns={"name", "facility_id"})
  *     })
  * @ORM\Entity
+ * @UniqueEntity(
+ *     fields={"name", "facility"}
+ *     )
  */
 class Guest
 {
@@ -32,6 +37,7 @@ class Guest
     /**
      * @var Facility
      * @ORM\ManyToOne(targetEntity="Facility", inversedBy="guests")
+     * @ORM\JoinColumn(name="facility_id", referencedColumnName="id", nullable=false)
      */
     protected $facility;
 
@@ -60,7 +66,7 @@ class Guest
      * @var Tag
      * @ORM\OneToMany(targetEntity="Tag", mappedBy="guest")
      */
-    protected $tag;
+    protected $tags;
 
     /**
      * @var boolean
@@ -69,13 +75,43 @@ class Guest
      */
     protected $enabled;
 
-    // l
+    // custome OneToMeny getters/setters
+
+    /**
+     * Add tag
+     *
+     * @param \PaddlereBundle\Entity\Tag $tag
+     *
+     * @return Guest
+     */
+    public function addTag(\PaddlereBundle\Entity\Tag $tag)
+    {
+        $tag->setGuest($this);
+        $this->tags[] = $tag;
+
+        return $this;
+    }
+
+    /**
+     * Remove tag
+     *
+     * @param \PaddlereBundle\Entity\Tag $tag
+     */
+    public function removeTag(\PaddlereBundle\Entity\Tag $tag)
+    {
+        $tag->setGuest(null);
+        $this->tags->removeElement($tag);
+    }
+
+
+    //  bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Guest
+
     /**
      * Constructor
      */
     public function __construct()
     {
-        $this->tag = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->tags = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
     /**
@@ -209,36 +245,12 @@ class Guest
     }
 
     /**
-     * Add tag
-     *
-     * @param \PaddlereBundle\Entity\Tag $tag
-     *
-     * @return Guest
-     */
-    public function addTag(\PaddlereBundle\Entity\Tag $tag)
-    {
-        $this->tag[] = $tag;
-
-        return $this;
-    }
-
-    /**
-     * Remove tag
-     *
-     * @param \PaddlereBundle\Entity\Tag $tag
-     */
-    public function removeTag(\PaddlereBundle\Entity\Tag $tag)
-    {
-        $this->tag->removeElement($tag);
-    }
-
-    /**
-     * Get tag
+     * Get tags
      *
      * @return \Doctrine\Common\Collections\Collection
      */
-    public function getTag()
+    public function getTags()
     {
-        return $this->tag;
+        return $this->tags;
     }
 }

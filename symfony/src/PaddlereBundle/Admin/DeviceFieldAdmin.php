@@ -11,6 +11,13 @@ use Sonata\AdminBundle\Show\ShowMapper;
 class DeviceFieldAdmin extends AbstractAdmin
 {
 
+    protected function configureDatagridFilters(DatagridMapper $mapper)
+    {
+        $mapper
+            ->add('device')
+        ;
+    }
+
     protected function configureListFields(ListMapper $mapper)
     {
         $mapper

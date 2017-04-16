@@ -3,6 +3,10 @@ services:
 #        class: PaddlereBundle\Example
 #        arguments: ["@service_id", "plain_value", "%parameter%"]
 
+    paddlere.manager.facility:
+        class: PaddlereBundle\Entity\FacilityManager
+        arguments: ["@doctrine"]
+
     paddlere.manager.device:
         class: PaddlereBundle\Entity\DeviceManager
         arguments: ["@doctrine"]
@@ -15,8 +19,20 @@ services:
         class: PaddlereBundle\Entity\FieldManager
         arguments: ["@doctrine"]
 
+    paddlere.manager.guest:
+        class: PaddlereBundle\Entity\GuestManager
+        arguments: ["@doctrine"]
+
+    paddlere.manager.host:
+        class: PaddlereBundle\Entity\HostManager
+        arguments: ["@doctrine"]
+
     paddlere.manager.event:
         class: PaddlereBundle\Entity\EventManager
+        arguments: ["@doctrine"]
+
+    paddlere.manager.transaction:
+        class: PaddlereBundle\Entity\TransactionManager
         arguments: ["@doctrine"]
 
     paddlere.admin.facility:
@@ -45,17 +61,23 @@ services:
         tags:
             - { name: sonata.admin, manager_type: orm, group: Setup, label: DeviceField }
 
-    paddlere.admin.guest:
-        class: PaddlereBundle\Admin\GuestAdmin
-        arguments: [~, PaddlereBundle\Entity\Guest, ~]
-        tags:
-            - { name: sonata.admin, manager_type: orm, group: Setup, label: Guest }
-
     paddlere.admin.tag:
         class: PaddlereBundle\Admin\TagAdmin
         arguments: [~, PaddlereBundle\Entity\Tag, ~]
         tags:
             - { name: sonata.admin, manager_type: orm, group: Setup, label: Tag }
+
+    paddlere.admin.host:
+        class: PaddlereBundle\Admin\HostAdmin
+        arguments: [~, PaddlereBundle\Entity\Host, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Setup, label: Host }
+
+    paddlere.admin.guest:
+        class: PaddlereBundle\Admin\GuestAdmin
+        arguments: [~, PaddlereBundle\Entity\Guest, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Setup, label: Guest }
 
     paddlere.admin.event:
         class: PaddlereBundle\Admin\EventAdmin
@@ -66,4 +88,19 @@ services:
     paddlere.service.event:
         class: PaddlereBundle\Service\EventService
         arguments: ["@logger", "@paddlere.manager.event", "@paddlere.manager.device", "@paddlere.manager.field" ]
+
+    paddlere.admin.transaction:
+        class: PaddlereBundle\Admin\TransactionAdmin
+        arguments: [~, PaddlereBundle\Entity\Transaction, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Manage, label: Transaction }
+
+    paddlere.block.service.facilties_credit:
+        class: PaddlereBundle\Block\FacilitiesCreditBlockService
+        arguments:
+            - paddle.block.service.facilties_credit
+            - "@templating"
+            - "@paddlere.manager.facility"
+        tags:
+            - { name: sonata.block }
 

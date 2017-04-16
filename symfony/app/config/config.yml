@@ -84,9 +84,21 @@ sonata_block:
             contexts: [admin]
         sonata.admin.block.search_result:
             contexts: [admin]
+        paddlere.block.service.facilties_credit:
+            contexts: [admin]
 
 sonata_admin:
     title:      'PaddleRE Admin'
     options:
         title_mode:   single_text
     show_mosaic_button:   false
+    dashboard:
+      blocks:
+        -
+          position: right
+          type: sonata.admin.block.admin_list
+        -
+          position: left
+          type: paddlere.block.service.facilties_credit
+
+
