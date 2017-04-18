@@ -132,7 +132,7 @@ class DefaultController extends Controller
                 }
                 break;
 
-            case 20: // Field event
+            case 20: // Field usage
 
                 /** @var FieldManager $fieldManager */
                 $fieldManager = $this->get('paddlere.manager.field');
@@ -203,8 +203,10 @@ class DefaultController extends Controller
                     }
                 }
 
-                $datetimeBegin = \DateTime::createFromFormat('U',$request->query->getInt('Beg',0));
-                $datetimeEnd = \DateTime::createFromFormat('U',$request->query->getInt('End',0));
+                $timezoneOffset = $request->query->getInt('Tzo',0);
+                $datetimeBegin = \DateTime::createFromFormat('U',$request->query->getInt('Beg',0)-$timezoneOffset)->setTimezone((new \DateTime())->getTimezone());
+                $datetimeEnd = \DateTime::createFromFormat('U',$request->query->getInt('End',0)-$timezoneOffset)->setTimezone((new \DateTime())->getTimezone());
+                $log->debug(sprintf("DatetimeEnd '%s' tz '%s'",$datetimeEnd->format('c'),$datetimeEnd->getTimezone()->getName()));
 
                 // TODO check datetime
 
@@ -264,7 +266,8 @@ class DefaultController extends Controller
                             $transaction->setEvent($event);
                             $transactionManager->save($transaction);  // cascade save event
                         }
-                        return new Response('',200);
+                        $msg = sprintf("%d;%s",$param,$event->getId());
+                        return new Response($msg);
                     } else {
                         $log->critical(sprintf("Event not found with id '%s'",$eventId));
                     }
