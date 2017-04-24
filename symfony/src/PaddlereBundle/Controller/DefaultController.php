@@ -68,8 +68,11 @@ class DefaultController extends Controller
 
         switch ($operation) {
             case 1: // no operation- ping only
-
-                return new Response(sprintf('1:%s',$device->getLastseenAt()->format('r')));
+                $timezoneOffset = $request->query->getInt('Tzo',0);
+                $datetime = \DateTime::createFromFormat('U',$request->query->getInt('T',0)-$timezoneOffset)->setTimezone((new \DateTime())->getTimezone());
+                $delta = (new \DateTime())->getTimestamp() - $datetime->getTimestamp();
+                $log->info(sprintf("Device '%s' time delta: %d",$device,$delta));
+                return new Response(sprintf('%d',(new \DateTime())->getTimestamp()+$timezoneOffset));
                 break;
 
             case 10: // Read a tag
@@ -287,6 +290,8 @@ class DefaultController extends Controller
                 }
 
                 $datetime = \DateTime::createFromFormat('U',$request->query->getInt('T',0));
+                $timezoneOffset = $request->query->getInt('Tzo',0);
+                $datetime = \DateTime::createFromFormat('U',$request->query->getInt('T',0)-$timezoneOffset)->setTimezone((new \DateTime())->getTimezone());
                 $log->warning(sprintf("Abuse on field '%s' at '%s'",$field,$datetime->format('c')));
 
                 /** @var EventManager $eventManager */
