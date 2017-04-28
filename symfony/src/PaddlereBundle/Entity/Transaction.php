@@ -81,7 +81,7 @@ class Transaction
 
     public function __toString()
     {
-        return $this->getAccountedAt()->format('c') . ' | ' . $this->getAmount();
+        return $this->getAccountedAt()->format('c') . ' | ' . $this->getGuest() . ' | ' . $this->getAmount();
     }
 
     // bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Transaction

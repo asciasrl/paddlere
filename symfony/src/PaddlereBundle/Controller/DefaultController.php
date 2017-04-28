@@ -67,7 +67,7 @@ class DefaultController extends Controller
         $deviceManager->ping($device);
 
         switch ($operation) {
-            case 1: // no operation- ping only
+            case 1: // no operation- ping and time sync
                 $timezoneOffset = $request->query->getInt('Tzo',0);
                 $datetime = \DateTime::createFromFormat('U',$request->query->getInt('T',0)-$timezoneOffset)->setTimezone((new \DateTime())->getTimezone());
                 $delta = (new \DateTime())->getTimestamp() - $datetime->getTimestamp();
@@ -147,8 +147,6 @@ class DefaultController extends Controller
                     return new Response($msg,404);
                 }
 
-                $eventId = $request->query->get('Eid','');
-
                 $eventTypeNum = $request->query->getInt('Use',-1);
                 switch ($eventTypeNum) {
                     case 0:
@@ -169,6 +167,25 @@ class DefaultController extends Controller
                         return new Response($msg,400);
                 }
 
+                $timezoneOffset = $request->query->getInt('Tzo',0);
+                $datetime = \DateTime::createFromFormat('U',$request->query->getInt('T',(new \DateTime())->getTimestamp())-$timezoneOffset)->setTimezone((new \DateTime())->getTimezone());
+                $datetimeBegin = \DateTime::createFromFormat('U',$request->query->getInt('Beg',0)-$timezoneOffset)->setTimezone((new \DateTime())->getTimezone());
+                $datetimeEnd = \DateTime::createFromFormat('U',$request->query->getInt('End',0)-$timezoneOffset)->setTimezone((new \DateTime())->getTimezone());
+                $log->debug(sprintf("Field:%s Begin:%s End:%s Tz:%s",$field,$datetimeBegin->format('c'),$datetimeEnd->format('c'),$datetimeEnd->getTimezone()->getName()));
+
+                /** @var EventManager $eventManager */
+                $eventManager = $this->get('paddlere.manager.event');
+
+                /** @var Event $event */
+                $event = $eventManager->findOneBy(array('field' => $field, 'datetimeBegin' => $datetimeBegin));
+                if (empty($event)) {
+                    $eventId = null;
+                    $event = $eventManager->create();
+                } else {
+                    $eventId = $event->getId();
+                    $log->debug(sprintf("Found event '%s'",$event));
+                }
+
                 $guestId = $request->query->get('Gid','');
                 if (empty($guestId)) {
                     if (empty($eventId)) {
@@ -187,6 +204,8 @@ class DefaultController extends Controller
                         $msg = sprintf("Guest id '%s' not found",$guestId);
                         $log->error($msg);
                         return new Response($msg,404);
+                    } else {
+                        $log->debug(sprintf("Guest '%s'",$guest));
                     }
                 }
 
@@ -203,18 +222,11 @@ class DefaultController extends Controller
                         $msg = sprintf("Host id '%s' not found",$guestId);
                         $log->error($msg);
                         return new Response($msg,404);
+                    } else {
+                        $log->debug(sprintf("Host '%s'",$host));
                     }
                 }
 
-                $timezoneOffset = $request->query->getInt('Tzo',0);
-                $datetimeBegin = \DateTime::createFromFormat('U',$request->query->getInt('Beg',0)-$timezoneOffset)->setTimezone((new \DateTime())->getTimezone());
-                $datetimeEnd = \DateTime::createFromFormat('U',$request->query->getInt('End',0)-$timezoneOffset)->setTimezone((new \DateTime())->getTimezone());
-                $log->debug(sprintf("DatetimeEnd '%s' tz '%s'",$datetimeEnd->format('c'),$datetimeEnd->getTimezone()->getName()));
-
-                // TODO check datetime
-
-                /** @var EventManager $eventManager */
-                $eventManager = $this->get('paddlere.manager.event');
                 /** @var TransactionManager $transactionManager */
                 $transactionManager = $this->get('paddlere.manager.transaction');
 
@@ -228,8 +240,6 @@ class DefaultController extends Controller
                 $transaction->setCreatedAt(new \DateTime());
 
                 if (empty($eventId)) {
-                    /** @var Event $event */
-                    $event = $eventManager->create();
                     $event->setField($field);
                     $event->setDevice($device);
                     $event->setGuest($guest);
@@ -239,41 +249,34 @@ class DefaultController extends Controller
                     $event->setEventType($eventType);
 
                     $transaction->setAmount($event->getDuration());
-                    $transaction->setAccountedAt($datetimeBegin);
+                    $transaction->setAccountedAt($datetime);
                     $transaction->setEvent($event);
                     $transactionManager->save($transaction);  // cascade save event
 
-                    $log->info(sprintf("Created new event '%s'",$event->getId()));
+                    $log->info(sprintf("Created new event '%s' id:%s",$event,$event->getId()));
                     $msg = sprintf("%d;%s",$param,$event->getId());
                     return new Response($msg);
                 } else {
-                    /** @var Event $event */
-                    $event = $eventManager->find($eventId);
-                    if ($event) {
-                        // TODO check matching of others data
-                        if ($event->getEventType() != $eventType) {
-                            $log->info(sprintf("Change event '%s' from type '%s', to '%s'",$event,$event->getEventType(),$eventType));
-                            $event->setEventType($eventType);
-                            $eventManager->save($event);
-                        }
-                        if (!($event->getDatetimeEnd() == $datetimeEnd)) {
-                            $log->info(sprintf("Change event '%s' ending from '%s', to '%s'",$event,$event->getDatetimeEnd()->format('c'),$datetimeEnd->format('c')));
-                            $durationBefore=$event->getDuration();
-                            $log->debug("before:" . $durationBefore);
-                            $event->setDatetimeBegin($datetimeBegin);
-                            $event->setDatetimeEnd($datetimeEnd);
-                            $durationAfter=$event->getDuration();
-                            $log->debug("after:" . $durationAfter);
-                            $transaction->setAmount($durationAfter - $durationBefore);
-                            $transaction->setAccountedAt(new \DateTime());
-                            $transaction->setEvent($event);
-                            $transactionManager->save($transaction);  // cascade save event
-                        }
-                        $msg = sprintf("%d;%s",$param,$event->getId());
-                        return new Response($msg);
-                    } else {
-                        $log->critical(sprintf("Event not found with id '%s'",$eventId));
+                    if ($event->getEventType() != $eventType) {
+                        $log->info(sprintf("Change event '%s' type from '%s' to '%s'",$event,$event->getEventType(),$eventType));
+                        $event->setEventType($eventType);
+                        $eventManager->save($event);  // save only event
                     }
+                    if (!($event->getDatetimeEnd() == $datetimeEnd)) {
+                        $log->info(sprintf("Change event '%s' ending from '%s' to '%s'",$event,$event->getDatetimeEnd()->format('c'),$datetimeEnd->format('c')));
+                        $durationBefore=$event->getDuration();
+                        $log->debug("before:" . $durationBefore);
+                        $event->setDatetimeBegin($datetimeBegin);
+                        $event->setDatetimeEnd($datetimeEnd);
+                        $durationAfter=$event->getDuration();
+                        $log->debug("after:" . $durationAfter);
+                        $transaction->setAmount($durationAfter - $durationBefore);
+                        $transaction->setAccountedAt($datetime);
+                        $transaction->setEvent($event);
+                        $transactionManager->save($transaction);  // update credit and cascade save event if needed
+                    }
+                    $msg = sprintf("%d;%s",$param,$event->getId());
+                    return new Response($msg);
                 }
                 break;
 
@@ -289,7 +292,6 @@ class DefaultController extends Controller
                     return new Response($msg,404);
                 }
 
-                $datetime = \DateTime::createFromFormat('U',$request->query->getInt('T',0));
                 $timezoneOffset = $request->query->getInt('Tzo',0);
                 $datetime = \DateTime::createFromFormat('U',$request->query->getInt('T',0)-$timezoneOffset)->setTimezone((new \DateTime())->getTimezone());
                 $log->warning(sprintf("Abuse on field '%s' at '%s'",$field,$datetime->format('c')));

@@ -13,6 +13,12 @@ class TransactionManager extends BaseEntityManager
         parent::__construct('PaddlereBundle\Entity\Transaction', $registry);
     }
 
+    /**
+     * Save transaction and update guest credit
+     *
+     * @param object $entity
+     * @param bool $andFlush
+     */
     public function save($entity, $andFlush = true)
     {
         parent::save($entity,false);
