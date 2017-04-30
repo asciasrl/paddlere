@@ -23,6 +23,18 @@ class Event
     protected $id;
 
     /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", options={"default": 0})
+     */
+    protected $createdAt;
+
+    /**
+     * @var \DateTime
+     * @ORM\Column(type="datetime", options={"default": 0})
+     */
+    protected $updatedAt;
+
+    /**
      * @var string Libero Affitto Lezione Promo Prenotazione Absuo
      * @ORM\Column(type="string", length=12)
      */
@@ -87,6 +99,23 @@ class Event
     public function __toString()
     {
         return $this->getDatetimeBegin()->format('c') . ' | ' . $this->getField();
+    }
+
+    /**
+     * @ORM\PrePersist()
+     */
+    public function prePersist()
+    {
+        $this->createdAt = new \DateTime();
+        $this->updatedAt = new \DateTime();
+    }
+
+    /**
+     * @ORM\PreUpdate()
+     */
+    public function preUpdate()
+    {
+        $this->updatedAt = new \DateTime();
     }
 
     // bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Event
@@ -332,5 +361,53 @@ class Event
     public function getTransactions()
     {
         return $this->transactions;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return Event
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     *
+     * @return Event
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
     }
 }

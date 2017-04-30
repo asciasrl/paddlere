@@ -19,7 +19,7 @@ class EventAdmin extends AbstractAdmin
         '_sort_order' => 'DESC',
 
         // name of the ordered field (default = the model's id field, if any)
-        '_sort_by' => 'datetimeBegin',
+        '_sort_by' => 'createdAt',
     );
 
     public function configureRoutes(RouteCollection $collection)  {
@@ -68,6 +68,8 @@ class EventAdmin extends AbstractAdmin
     protected function configureShowFields(ShowMapper $mapper)
     {
         $mapper
+            ->add('createdAt', null, array('format' => 'r'))
+            ->add('updatedAt', null, array('format' => 'r'))
             ->add('eventType')
             ->add('datetimeBegin', null, array('format' => 'r'))
             ->add('datetimeEnd', null, array('format' => 'r'))
