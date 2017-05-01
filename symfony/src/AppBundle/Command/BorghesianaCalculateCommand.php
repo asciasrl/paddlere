@@ -67,7 +67,7 @@ class BorghesianaCalculateCommand extends ContainerAwareCommand
                 } else {
                     $interval =  $inizi[$campo]->getDataora()->diff($log->getDataora());
                     //var_dump($interval);
-                    if ($interval->days > 1) {
+                    if ($interval->days > 1 || $interval->h > 6) {
                         $output->writeLn('Orpham ' . $inizi[$campo]);
                         $inizi[$campo]->setTipo($tipo . ' Orphan');
                         $inizi[$campo]->setFine($log->getDataora());
