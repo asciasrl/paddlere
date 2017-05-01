@@ -2,6 +2,7 @@
 
 namespace PaddlereBundle\Admin;
 
+use Exporter\Source\DoctrineORMQuerySourceIterator;
 use PaddlereBundle\Entity\Event;
 use PaddlereBundle\PaddlereBundle;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
@@ -90,5 +91,21 @@ class EventAdmin extends AbstractAdmin
             ->setDatetimeEnd(new \DateTime());
     }
 
+    public function getExportFields()
+    {
+        return array('field', 'eventType', 'datetimeBegin', 'datetimeEnd', 'duration', 'guest', 'host', 'createdAt', 'updatedAt');
+    }
+
+    public function getExportFormats()
+    {
+        return array('xls');
+    }
+
+    public function getDataSourceIterator()
+    {
+        $iterator = parent::getDataSourceIterator();
+        $iterator->setDateTimeFormat('Y-m-d\TH.i.s');
+        return $iterator;
+    }
 
 }
