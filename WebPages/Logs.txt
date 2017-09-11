@@ -1,0 +1,3 @@
+[L] SFR050 [27/03/2017 17:18:12]  1000, System power on                 
+[L] SFW184 [27/03/2017 17:18:12]  5005, Starting Op. System SFW184B040  
+[L] SFW184 [27/03/2017 17:18:16]  6000, Run ApplID:0x6AB20FA1           

@@ -1,0 +1,272 @@
+<html lang="it">
+<head>
+	<meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <!-- The above 3 meta tags *must* come first in the head; any other head content must come *after* these tags -->
+	
+	<!-- Latest compiled and minified CSS -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+
+	<!-- Optional theme -->
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap-theme.min.css" integrity="sha384-rHyoN1iRsVXV4nD0JutlnGaslCJuC7uwjduW9SVrLvRYooPp2bWYgmgJQIXwl/Sp" crossorigin="anonymous">
+
+	<!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+	
+	<!-- Latest compiled and minified JavaScript -->
+	<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js" integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa" crossorigin="anonymous"></script>
+
+	<link rel="icon" href="/Storage/PaddleRe.ico" />
+	
+	<title>PaddleRE Gestione Campi</title>
+<style type="text/css">
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  /* Margin bottom by footer height */
+  margin-bottom: 60px;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  /* Set the fixed height of the footer here */
+  height: 60px;
+  background-color: #f5f5f5;
+}
+
+/* Custom page CSS
+-------------------------------------------------- */
+/* Not required for template or sticky footer method. */
+
+.container {
+  width: auto;
+  max-width: 800px;
+  padding: 0 15px;
+}
+.container .text-muted {
+  margin: 20px 0;
+}
+</style>
+<script>
+function Update()
+{
+  $.get( "/Storage/Status.htm")
+  .done(function( status ) {
+	var fields = status.split("\r\n");
+	console.log(fields);
+	var message = fields[0].split(";");
+	var messageDiv = $("#message")[0];
+	console.log(messageDiv);
+	if (fields[0] == '' || message[1] == '' || messageDiv.innerHTML == message[1]) {
+		$("#message").parent().fadeOut();
+		//$("#message")[0].className = "hidden";
+	} else {
+		messageDiv.innerHTML = message[1];
+		messageDiv.parentElement.className = "alert alert-dismissable alert-" + message[0];
+		$("#message").parent().fadeIn();
+	}
+	for (var i=1; i <=6; i++ ) {
+		var fieldDiv = $("#field-" + i + "-status");
+		fieldDiv.empty();
+		fieldH4 = document.createElement("h4");
+		fieldDiv[0].appendChild(fieldH4);
+		fieldTR = fieldDiv[0].parentElement.parentElement;
+		var field = fields[i].split(";");
+		var s = '';
+		var n = '';
+		switch (field[0]) {
+			case '0':
+				s = 'Libero';
+				n = 'formNew';
+				break;
+			case '1':
+				s = 'Affitto';
+				n = 'formEdit';
+				break;
+			case '2':
+				s = 'Lezione';
+				n = 'formEdit';
+				break;
+			case '3':
+				s = 'Promo';
+				n = 'formEdit';
+				break;
+			case '4':
+				s = 'Abuso';
+				n = 'formNew';
+				break;
+			default:
+				console.log("Uso sconosciuto");
+		}
+				
+		if (s == 'Libero') {
+			fieldTR.className = "alert alert-success";
+		} else if (s == 'Abuso') {
+			fieldTR.className = "alert alert-danger";
+			s = s + " alle " + field[1];
+		} else {
+			fieldTR.className = "alert alert-info";
+			s = s + " dalle " + field[1] + " alle " + field[2] + " per " + field[3];
+			if (field[4] != '') {
+				s = s + " da " + field[4];
+			}
+		}
+		if (n == '') {
+			fieldDiv.parent().unbind('click');
+		} else {
+			fieldDiv.parent().click(function() {
+				$(this).children("div").css("display","none");
+				$(this).find("form").parent().css("display","block");
+			});
+		}
+		fieldH4.appendChild(document.createTextNode(s));
+	}
+  })
+}  
+
+function Init()
+{
+	for (i = 1; i <= 6; i++) { 
+		console.log("Append to " + i);
+		var form=$("#prenotazione").clone();
+		form.attr("id","prenotazione-"+i);
+		console.log(form.find("#PrenotaCampo")[0]);
+		form.find("#PrenotaCampo").val(i);
+		form.appendTo($("#field-" + i + "-status").parent());
+		
+		/*
+		$("#field-" + i + "-status").parent().click(function() {
+			//$(this).empty().append($("#prenotazione").clone().)
+			//console.log($(this).find("form"));
+			//console.log($(this).parent()children("div"));
+			$(this).children("div").css("display","none");
+			$(this).find("form").parent().css("display","block");
+			//var form=$(this).find("form")[0];
+			//form.css("display","block");		
+			//alert($(this).find("form")[0]);
+		});
+		*/
+	}
+    Update();
+    setInterval(Update, 5000);
+}
+
+</script>
+</head>
+<body onLoad="Init();">
+<div class="container">
+	<h1>PaddleRE <small>Gestione campi</small></h1>
+	<div class="hidden"><a href="#" class="close" data-dismiss="alert" aria-label="close">&times;</a>
+		<div id="message"></div>
+	</div>
+	<h2>Situazione</h2>
+	<table class="table table-hover">
+		<tr>
+			<th class="col-md-2" style="text-align: center;">#</th>
+			<th class="col-md-10">Stato</th>
+		</tr>
+		<tr>
+			<td style="text-align: center;"><h4>1</h4></td>
+			<td><div id="field-1-status">Stato campo 1 ...</div></td>
+		</tr>
+		<tr>
+			<td style="text-align: center;"><h4>2</h4></td>
+			<td><div id="field-2-status">Stato campo 2 ...</div></td>
+		</tr>
+		<tr>
+			<td style="text-align: center;"><h4>3</h4></td>
+			<td><div id="field-3-status">Stato campo 3 ...</div></td>
+		</tr>
+		<tr>
+			<td style="text-align: center;"><h4>4</h4></td>
+			<td><div id="field-4-status">Stato campo 4 ...</div></td>
+		</tr>
+		<tr>
+			<td style="text-align: center;"><h4>5</h4></td>
+			<td><div id="field-5-status">Stato campo 5 ...</div></td>
+		</tr>
+		<tr>
+			<td style="text-align: center;"><h4>6</h4></td>
+			<td><div id="field-6-status">Stato campo 6 ...</div></td>
+		</tr>
+	</table>
+</div>
+<div id="prenotazione" style="display:none;">
+	<h3>Prenotazione</h3>
+	<form class="form-inline" name="main" method="POST" action="/Storage/PaddleRE.htm">
+		<input type="hidden" id="PrenotaCampo" name="USINT 0" value="0">
+		<div class="row">
+			<div class="col-md-12">
+				<div class="form-group">
+					<label for="PrenotaUso">Uso</label>
+					<select class="form-control" id="PrenotaUso" name="">
+						<option value="0">Libero</option>
+						<option value="1" selected>Affitto</option>
+						<option value="2">Lezione</option>
+						<option value="3">Promo</option>
+					</select>
+				</div>
+<!--
+			<div class="form-group">
+					<label for="PrenotaCampo">Campo</label>
+					<select class="form-control" id="PrenotaCampo" name="USINT 0">
+						<option value="0">Scegli</option>
+						<option value="1">1</option>
+						<option value="2">2</option>
+						<option value="3">3</option>
+						<option value="4">4</option>
+						<option value="5">5</option>
+						<option value="6">6</option>
+					</select>
+				</div>
+-->				
+				<div class="form-group">
+					<label for="PrenotaInizio">Inizio</label>
+					<select class="form-control" id="PrenotaInizio" name="">
+						<option value="-30">30 miniti fa</option>
+						<option value="-15">15 minuti fa</option>
+						<option value="-5">5 minuti fa</option>
+						<option value="0" selected>Ora</option>
+						<option value="10">fra 10 minuti</option>
+						<option value="20">fra 20 minuti</option>
+						<option value="30">fra 30 minuti</option>
+					</select>
+				</div>
+				<div class="form-group">
+					<label for="PrenotaDurata">Durata</label>
+					<select class="form-control" id="PrenotaDurata" name="USINT 1">
+						<option value="30">30 minuti</option>
+						<option value="60">60 minuti</option>
+						<option value="90" selected>90 minuti</option>
+						<option value="120">2 ore</option>
+						<option value="180">3 ore</option>
+					</select>
+				</div>
+			</div>
+			<div class="col-md-12">
+				<div class="form-group">
+					<label for="PrenotaGuestName">Nome Ospite</label>
+					<input class="form-control" id="PrenotaGuestName" name="STRING 12 16" type="text" size="16">
+				</div>
+				<div class="form-group">
+					<label for="PrenotaHostPin">PIN Operatore</label>
+					<input class="form-control" id="PrenotaHostPin"  name="STRING 2 8" type="password" size="8">
+				</div>
+				<button type="submit" class="form-control btn btn-primary btn-md">Ok</button>
+			</div>
+		</div>
+	</form>
+</div>
+<footer class="footer">
+	<div class="container">
+		<p class="text-muted">PaddleRE Gestione Campi - (C) 2017 Paddle RE S.r.l..</p>
+	</div>
+</footer>	
+</body>
+</html>
