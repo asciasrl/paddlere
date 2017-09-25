@@ -17,6 +17,7 @@ class HostAdmin extends AbstractAdmin
             ->addIdentifier('name')
             ->add('facility')
             ->add('enabled')
+            ->add('lastseenAt')
         ;
     }
 
@@ -52,6 +53,7 @@ class HostAdmin extends AbstractAdmin
             ->add('name')
             ->add('facility')
             ->add('enabled')
+            ->add('lastseenAt')
         ;
     }
 

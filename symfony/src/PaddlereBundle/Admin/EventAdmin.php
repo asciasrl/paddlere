@@ -37,7 +37,9 @@ class EventAdmin extends AbstractAdmin
             ->add('duration')
             ->add('field.facility', null, array('label' => 'Facility', 'associated_property' => 'name'))
             ->add('field', null, array('associated_property' => 'name'))
+            ->add('tag')
             ->add('guest', null, array('associated_property' => 'name'))
+            ->add('host', null, array('associated_property' => 'name'))
         ;
     }
 
@@ -47,6 +49,9 @@ class EventAdmin extends AbstractAdmin
             ->add('eventType')
             ->add('field.facility')
             ->add('field')
+            ->add('tag')
+            ->add('guest')
+            ->add('host')
         ;
     }
 

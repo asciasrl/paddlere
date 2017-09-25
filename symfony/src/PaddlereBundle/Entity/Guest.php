@@ -69,6 +69,13 @@ class Guest
     protected $tags;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="lastseen_at", type="datetime", nullable=true)
+     */
+    protected $lastseenAt;
+
+    /**
      * @var boolean
      *
      * @ORM\Column(name="enabled", type="boolean")
@@ -252,5 +259,29 @@ class Guest
     public function getTags()
     {
         return $this->tags;
+    }
+
+    /**
+     * Set lastseenAt
+     *
+     * @param \DateTime $lastseenAt
+     *
+     * @return Guest
+     */
+    public function setLastseenAt($lastseenAt)
+    {
+        $this->lastseenAt = $lastseenAt;
+
+        return $this;
+    }
+
+    /**
+     * Get lastseenAt
+     *
+     * @return \DateTime
+     */
+    public function getLastseenAt()
+    {
+        return $this->lastseenAt;
     }
 }

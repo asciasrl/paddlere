@@ -57,6 +57,13 @@ class Host
      */
     protected $facility;
 
+    /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="lastseen_at", type="datetime", nullable=true)
+     */
+    protected $lastseenAt;
+
     // bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Host
 
 
@@ -164,5 +171,29 @@ class Host
     public function getFacility()
     {
         return $this->facility;
+    }
+
+    /**
+     * Set lastseenAt
+     *
+     * @param \DateTime $lastseenAt
+     *
+     * @return Host
+     */
+    public function setLastseenAt($lastseenAt)
+    {
+        $this->lastseenAt = $lastseenAt;
+
+        return $this;
+    }
+
+    /**
+     * Get lastseenAt
+     *
+     * @return \DateTime
+     */
+    public function getLastseenAt()
+    {
+        return $this->lastseenAt;
     }
 }

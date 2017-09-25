@@ -13,4 +13,14 @@ class HostManager extends BaseEntityManager
         parent::__construct('PaddlereBundle\Entity\Host', $registry);
     }
 
+    /**
+     * Updates lastseen of the host
+     * @param Host $host
+     */
+    public function ping(Host $host)
+    {
+        $host->setLastseenAt(new \DateTime());
+        $this->getEntityManager()->flush();
+    }
+
 }

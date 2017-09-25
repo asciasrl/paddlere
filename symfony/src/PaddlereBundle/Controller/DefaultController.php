@@ -11,6 +11,7 @@ use PaddlereBundle\Entity\FieldManager;
 use PaddlereBundle\Entity\Guest;
 use PaddlereBundle\Entity\GuestManager;
 use PaddlereBundle\Entity\Host;
+use PaddlereBundle\Entity\HostManager;
 use PaddlereBundle\Entity\Tag;
 use PaddlereBundle\Entity\TagManager;
 use PaddlereBundle\Entity\Transaction;
@@ -94,6 +95,9 @@ class DefaultController extends Controller
                         $log->error($msg);
                         return new Response($msg,404);
                     } else {
+                        /** @var GuestManager $guestManager */
+                        $guestManager = $this->get('paddlere.manager.guest');
+                        $guestManager->ping($guest);
                         $msg = sprintf("%s;%s;%d;%d;%d;%s",$tag->getSerial(),$guest->getId(),$guest->getCredit(),$guest->getFun(),$guest->getEnabled(),$guest->getName());
                         $log->info("Read Guest: " . $msg);
                         return new Response($msg);
@@ -135,7 +139,51 @@ class DefaultController extends Controller
                 }
                 break;
 
+            case 12: // Find a Guest by its name (and facility of the device)
+
+                /** @var GuestManager $guestManager */
+                $guestManager = $this->get('paddlere.manager.guest');
+                /** @var Guest $guest */
+                $guest = $guestManager->findOneBy(array('facility' => $device->getFacility(), 'name' => $param));
+                if (empty($guest)) {
+                    $msg = sprintf("Guest with name '%s' not found",$param);
+                    $log->error($msg);
+                    return new Response($msg,404);
+                } else {
+                    $guestManager->ping($guest);
+                    $tag = $guest->getTags()->first();
+                    if (empty($tag)) {
+                        $msg = sprintf("Guest '%s' has no tag",$guest);
+                        $log->error($msg);
+                        return new Response($msg,404);
+                    }
+                    $msg = sprintf("%s;%s;%d;%d;%d;%s",$tag->getSerial(),$guest->getId(),$guest->getCredit(),$guest->getFun(),$guest->getEnabled(),$guest->getName());
+                    //$msg = sprintf("%s;%d;%d;%d;%s",$guest->getId(),$guest->getCredit(),$guest->getFun(),$guest->getEnabled(),$guest->getName());
+                    $log->info("Read Guest: " . $msg);
+                    return new Response($msg);
+                }
+                break;
+
+            case 13: // Find a Host by its PIN (and facility of the device)
+
+                /** @var HostManager $hostManager */
+                $hostManager = $this->get('paddlere.manager.host');
+                /** @var Host $host */
+                $host = $hostManager->findOneBy(array('facility' => $device->getFacility(), 'password' => $param));
+                if (empty($host)) {
+                    $msg = sprintf("Host with PIN '%s' not found",$param);
+                    $log->error($msg);
+                    return new Response($msg,404);
+                } else {
+                    $hostManager->ping($host);
+                    $msg = sprintf("%s;%s;%d;%s",$host->getId(),$host->getPassword(),$host->getEnabled(),$host->getName());
+                    $log->info("Read Host: " . $msg);
+                    return new Response($msg);
+                }
+                break;
+
             case 20: // Field usage
+            case 21: // Field usage modification
 
                 /** @var FieldManager $fieldManager */
                 $fieldManager = $this->get('paddlere.manager.field');
@@ -176,8 +224,19 @@ class DefaultController extends Controller
                 /** @var EventManager $eventManager */
                 $eventManager = $this->get('paddlere.manager.event');
 
-                /** @var Event $event */
-                $event = $eventManager->findOneBy(array('field' => $field, 'datetimeBegin' => $datetimeBegin));
+                $eventId = $request->query->get('Eid','');
+
+                if (!empty($eventId)) {
+                    $event = $eventManager->find($eventId);
+                    if (empty($event)) {
+                        $msg = sprintf("Invalid event id '%s'",$eventId);
+                        $log->error($msg);
+                        return new Response($msg,404);
+                    }
+                } else {
+                    /** @var Event $event */
+                    $event = $eventManager->findOneBy(array('field' => $field, 'datetimeBegin' => $datetimeBegin));
+                }
                 if (empty($event)) {
                     $eventId = null;
                     $event = $eventManager->create();
@@ -193,7 +252,7 @@ class DefaultController extends Controller
                         $log->error($msg);
                         return new Response($msg, 400);
                     } else {
-                        $guest = null;
+                        $guest = $event->getGuest();
                     }
                 } else {
                     /** @var GuestManager $guestManager */
@@ -209,10 +268,34 @@ class DefaultController extends Controller
                     }
                 }
 
+                $tagSerial = $request->query->get('Tag','');
+                if (empty($tagSerial)) {
+                    $tag = null;
+                }
+                /** @var TagManager $tagManager */
+                $tagManager = $this->get('paddlere.manager.tag');
+                $tag =  $tagManager->findOneBy(array('facility' => $device->getFacility(), 'serial' => $tagSerial));
+
+                /** @var Guest $guestTag */
+                /*
+                $guestTag = $tagManager->findOneBy(array('tag' => $tag));
+                if (empty($guestTag)) {
+                    $msg = sprintf("Tag '%s' don't belongs to any guest",$tagSerial);
+                    $log->error($msg);
+                    return new Response($msg,404);
+                }
+
+                if ($guestTag->getId() != $guest->getId() ) {
+                    $msg = sprintf("Tag '%s' don't belongs to guest '%s' but to '%s'",$tagSerial,$guest,$guestTag);
+                    $log->error($msg);
+                    return new Response($msg,404);
+                }
+                */
+
                 $hostId = $request->query->get('Hid','');
                 if (empty($hostId)) {
                     $log->debug("Host ID not specified");
-                    $host = null;
+                    $host = $event->getHost();
                 } else {
                     /** @var GuestManager $guestManager */
                     $hostManager = $this->get('paddlere.manager.host');
@@ -243,6 +326,7 @@ class DefaultController extends Controller
                     $event->setField($field);
                     $event->setDevice($device);
                     $event->setGuest($guest);
+                    $event->setTag($tag);
                     $event->setHost($host);
                     $event->setDatetimeBegin($datetimeBegin);
                     $event->setDatetimeEnd($datetimeEnd);
