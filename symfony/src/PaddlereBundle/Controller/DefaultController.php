@@ -64,7 +64,8 @@ class DefaultController extends Controller
             $log->error($msg);
             return new Response($msg,404);
         }
-        $log->info(sprintf("Ping device '%s'", $device));
+        $log->info(sprintf("Ping device '%s' from %s", $device,join('/',$request->getClientIps())));
+        $device->setRemoteIP($request->getClientIp());
         $deviceManager->ping($device);
 
         switch ($operation) {

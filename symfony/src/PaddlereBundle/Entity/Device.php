@@ -48,6 +48,13 @@ class Device
     protected $lastseenAt;
 
     /**
+     * @var \String
+     *
+     * @ORM\Column(name="remote_ip", type="string", length=45, nullable=true)
+     */
+    protected $remoteIP;
+
+    /**
      * @var Facility
      * @ORM\ManyToOne(targetEntity="Facility", inversedBy="devices")
      */
@@ -208,5 +215,29 @@ class Device
     public function getDeviceFields()
     {
         return $this->deviceFields;
+    }
+
+    /**
+     * Set remoteIP
+     *
+     * @param string $remoteIP
+     *
+     * @return Device
+     */
+    public function setRemoteIP($remoteIP)
+    {
+        $this->remoteIP = $remoteIP;
+
+        return $this;
+    }
+
+    /**
+     * Get remoteIP
+     *
+     * @return string
+     */
+    public function getRemoteIP()
+    {
+        return $this->remoteIP;
     }
 }

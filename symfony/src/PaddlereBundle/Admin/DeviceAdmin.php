@@ -19,6 +19,7 @@ class DeviceAdmin extends AbstractAdmin
             ->add('facility')
             //->add('deviceFields')
             ->add('lastseenAt')
+            ->add('remoteIP')
         ;
     }
 
@@ -53,6 +54,7 @@ class DeviceAdmin extends AbstractAdmin
             ->add('serial')
             ->add('facility')
             ->add('lastseenAt')
+            ->add('remoteIP')
             ->add('deviceFields')
         ;
     }
