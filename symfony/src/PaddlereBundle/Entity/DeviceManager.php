@@ -23,7 +23,9 @@ class DeviceManager extends BaseEntityManager
         if ($dateTime === null) {
             $dateTime = new \DateTime();
         }
-        $device->setLastseenAt($dateTime);
-        $this->getEntityManager()->flush();
+        if ($dateTime > $device->getLastseenAt()) {
+            $device->setLastseenAt($dateTime);
+            $this->getEntityManager()->flush();
+        }
     }
 }
