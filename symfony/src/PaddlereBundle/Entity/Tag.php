@@ -34,6 +34,13 @@ class Tag
     protected $serial;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="description", type="string", length=255, nullable=true)
+     */
+    protected $description;
+
+    /**
      * @var Guest
      * @ORM\ManyToOne(targetEntity="Guest", inversedBy="Tags")
      */
@@ -190,5 +197,29 @@ class Tag
     public function getFacility()
     {
         return $this->facility;
+    }
+
+    /**
+     * Set description
+     *
+     * @param string $description
+     *
+     * @return Tag
+     */
+    public function setDescription($description)
+    {
+        $this->description = $description;
+
+        return $this;
+    }
+
+    /**
+     * Get description
+     *
+     * @return string
+     */
+    public function getDescription()
+    {
+        return $this->description;
     }
 }
