@@ -24,6 +24,15 @@ class AppKernel extends Kernel
             // And finally, the storage and SonataAdminBundle
             new Sonata\DoctrineORMAdminBundle\SonataDoctrineORMAdminBundle(),
             new Sonata\AdminBundle\SonataAdminBundle(),
+            new Sonata\MediaBundle\SonataMediaBundle(),
+            new Application\Sonata\MediaBundle\ApplicationSonataMediaBundle(),
+            new Sonata\EasyExtendsBundle\SonataEasyExtendsBundle(),
+
+            // You need to add this dependency to make media functional
+            new JMS\SerializerBundle\JMSSerializerBundle(),
+
+            // HTTP Client
+            new EightPoints\Bundle\GuzzleBundle\GuzzleBundle(),
 
             new AppBundle\AppBundle(),
             new Ascia\GoogleCalendarBundle\AsciaGoogleCalendarBundle(),

@@ -2,6 +2,7 @@
 
 namespace PaddlereBundle\Entity;
 
+use Application\Sonata\MediaBundle\Entity\Media;
 use Doctrine\ORM\Mapping as ORM;
 
 /**
@@ -83,6 +84,12 @@ class Event
     protected $host;
 
     /**
+     * @var Media
+     * @ORM\OneToOne(targetEntity="Application\Sonata\MediaBundle\Entity\Media", cascade="persist")
+     */
+    protected $snapshot;
+
+    /**
      * @var Transaction[]
      * @ORM\OneToMany(targetEntity="Transaction", mappedBy="event")
      */
@@ -121,6 +128,14 @@ class Event
     // bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Event
 
     /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->transactions = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
      * Get id
      *
      * @return guid
@@ -128,6 +143,54 @@ class Event
     public function getId()
     {
         return $this->id;
+    }
+
+    /**
+     * Set createdAt
+     *
+     * @param \DateTime $createdAt
+     *
+     * @return Event
+     */
+    public function setCreatedAt($createdAt)
+    {
+        $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    /**
+     * Get createdAt
+     *
+     * @return \DateTime
+     */
+    public function getCreatedAt()
+    {
+        return $this->createdAt;
+    }
+
+    /**
+     * Set updatedAt
+     *
+     * @param \DateTime $updatedAt
+     *
+     * @return Event
+     */
+    public function setUpdatedAt($updatedAt)
+    {
+        $this->updatedAt = $updatedAt;
+
+        return $this;
+    }
+
+    /**
+     * Get updatedAt
+     *
+     * @return \DateTime
+     */
+    public function getUpdatedAt()
+    {
+        return $this->updatedAt;
     }
 
     /**
@@ -321,12 +384,29 @@ class Event
     {
         return $this->host;
     }
+
     /**
-     * Constructor
+     * Set snapshot
+     *
+     * @param \Application\Sonata\MediaBundle\Entity\Media $snapshot
+     *
+     * @return Event
      */
-    public function __construct()
+    public function setSnapshot(\Application\Sonata\MediaBundle\Entity\Media $snapshot = null)
     {
-        $this->transactions = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->snapshot = $snapshot;
+
+        return $this;
+    }
+
+    /**
+     * Get snapshot
+     *
+     * @return \Application\Sonata\MediaBundle\Entity\Media
+     */
+    public function getSnapshot()
+    {
+        return $this->snapshot;
     }
 
     /**
@@ -361,53 +441,5 @@ class Event
     public function getTransactions()
     {
         return $this->transactions;
-    }
-
-    /**
-     * Set createdAt
-     *
-     * @param \DateTime $createdAt
-     *
-     * @return Event
-     */
-    public function setCreatedAt($createdAt)
-    {
-        $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    /**
-     * Get createdAt
-     *
-     * @return \DateTime
-     */
-    public function getCreatedAt()
-    {
-        return $this->createdAt;
-    }
-
-    /**
-     * Set updatedAt
-     *
-     * @param \DateTime $updatedAt
-     *
-     * @return Event
-     */
-    public function setUpdatedAt($updatedAt)
-    {
-        $this->updatedAt = $updatedAt;
-
-        return $this;
-    }
-
-    /**
-     * Get updatedAt
-     *
-     * @return \DateTime
-     */
-    public function getUpdatedAt()
-    {
-        return $this->updatedAt;
     }
 }

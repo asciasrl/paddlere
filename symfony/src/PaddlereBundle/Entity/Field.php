@@ -47,6 +47,12 @@ class Field
      */
     protected $deviceField;
 
+    /**
+     * @var string
+     * @ORM\Column(name="snapshotUri", type="string", length=255, nullable=true)
+     */
+    protected $snapshotUri;
+
     // bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Field
 
     /**
@@ -129,5 +135,29 @@ class Field
     public function getDeviceField()
     {
         return $this->deviceField;
+    }
+
+    /**
+     * Set snapshotUri
+     *
+     * @param string $snapshotUri
+     *
+     * @return Field
+     */
+    public function setSnapshotUri($snapshotUri)
+    {
+        $this->snapshotUri = $snapshotUri;
+
+        return $this;
+    }
+
+    /**
+     * Get snapshotUri
+     *
+     * @return string
+     */
+    public function getSnapshotUri()
+    {
+        return $this->snapshotUri;
     }
 }

@@ -87,7 +87,7 @@ services:
 
     paddlere.service.event:
         class: PaddlereBundle\Service\EventService
-        arguments: ["@logger", "@paddlere.manager.event", "@paddlere.manager.device", "@paddlere.manager.field" ]
+        arguments: ["@logger", "@paddlere.manager.event", "@paddlere.manager.device", "@paddlere.manager.field" , "@sonata.media.provider.image", "@guzzle.client.snapshot" ]
 
     paddlere.admin.transaction:
         class: PaddlereBundle\Admin\TransactionAdmin

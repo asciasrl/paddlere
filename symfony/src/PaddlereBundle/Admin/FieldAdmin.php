@@ -44,6 +44,7 @@ class FieldAdmin extends AbstractAdmin
 		$mapper
             ->add('name')
             ->add('facility')
+            ->add('snapshotUri')
 		;
 	}
 
@@ -52,6 +53,7 @@ class FieldAdmin extends AbstractAdmin
         $mapper
             ->add('name')
             ->add('facility')
+            ->add('snapshotUri')
             ->add('deviceField')
         ;
     }

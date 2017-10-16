@@ -16,6 +16,7 @@ use PaddlereBundle\Entity\Tag;
 use PaddlereBundle\Entity\TagManager;
 use PaddlereBundle\Entity\Transaction;
 use PaddlereBundle\Entity\TransactionManager;
+use PaddlereBundle\Service\EventService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
@@ -339,6 +340,12 @@ class DefaultController extends Controller
                     $transactionManager->save($transaction);  // cascade save event
 
                     $log->info(sprintf("Created new event '%s' id:%s",$event,$event->getId()));
+
+                    // TEST: save snapshot also of regular use
+                    /** @var EventService $eventService */
+                    $eventService = $this->get('paddlere.service.event');
+                    $eventService->takeSnapshot($event);
+
                     $msg = sprintf("%d;%s",$param,$event->getId());
                     return new Response($msg);
                 } else {
@@ -393,6 +400,11 @@ class DefaultController extends Controller
                 $eventManager->save($event);
 
                 $log->info(sprintf("Created new event '%s'",$event->getId()));
+
+                /** @var EventService $eventService */
+                $eventService = $this->get('paddlere.service.event');
+                $eventService->takeSnapshot($event);
+
                 $msg = sprintf("%d;%s",$param,$event->getId());
                 return new Response($msg);
 

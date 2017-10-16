@@ -4,12 +4,18 @@
 namespace PaddlereBundle\Service;
 
 
+use Application\Sonata\MediaBundle\Entity\Media;
+use GuzzleHttp\Client;
+use GuzzleHttp\Exception\TransferException;
 use PaddlereBundle\Entity\DeviceManager;
 use PaddlereBundle\Entity\Event;
 use PaddlereBundle\Entity\EventManager;
 use PaddlereBundle\Entity\Field;
 use PaddlereBundle\Entity\FieldManager;
 use Psr\Log\LoggerInterface;
+use Sonata\MediaBundle\Extra\ApiMediaFile;
+use Sonata\MediaBundle\Provider\MediaProviderInterface;
+use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
 
 class EventService
 {
@@ -34,12 +40,24 @@ class EventService
      */
     private $fieldManager;
 
-    public function __construct(LoggerInterface $logger, EventManager $eventManager, DeviceManager $deviceManager, FieldManager $fieldManager)
+    /**
+     * @var MediaProviderInterface
+     */
+    private $imageProvider;
+
+    /**
+     * @var Client
+     */
+    private $httpClient;
+
+    public function __construct(LoggerInterface $logger, EventManager $eventManager, DeviceManager $deviceManager, FieldManager $fieldManager, MediaProviderInterface $imageProvider, Client $httpClient)
     {
         $this->logger = $logger;
-        $this->eventManager= $eventManager;
+        $this->eventManager = $eventManager;
         $this->deviceManager = $deviceManager;
         $this->fieldManager = $fieldManager;
+        $this->imageProvider = $imageProvider;
+        $this->httpClient = $httpClient;
     }
 
     /**
@@ -49,14 +67,14 @@ class EventService
      * @param $fieldNum int Number of the field
      * @param $datetimeEnd \DateTime Starting time
      */
-    public function addEvent($deviceSerial, $eventType, $datetimeBegin=null, $fieldNum=0, $datetimeEnd=null)
+    public function addEvent($deviceSerial, $eventType, $datetimeBegin = null, $fieldNum = 0, $datetimeEnd = null)
     {
         $device = $this->deviceManager->findOneBy(array('serial' => $deviceSerial));
         if (empty($device)) {
             $this->logger->critical(sprintf("Device with serial '%s' not found", $deviceSerial));
             return false;
         }
-        $this->deviceManager->ping($device,$datetimeBegin);
+        $this->deviceManager->ping($device, $datetimeBegin);
         if ($eventType == 'Dummy') {
             return; // ping only
         }
@@ -78,17 +96,83 @@ class EventService
 
         if ($fieldNum > 0) {
             /** @var Field $field */
-            $field = $this->fieldManager->findOneByDeviceField($device,$fieldNum);
+            $field = $this->fieldManager->findOneByDeviceField($device, $fieldNum);
             if (empty($field)) {
-                $this->logger->error(sprintf("Field n.%d not found for device '%s'", $fieldNum,$device));
+                $this->logger->error(sprintf("Field n.%d not found for device '%s'", $fieldNum, $device));
             } else {
                 $event->setField($field);
+            }
+        }
+
+        if (!empty($event->getField())) {
+            if (empty($event->getField()->getSnapshotUri())) {
+                $this->logger->warning(sprintf("Cannot take snapshot, add uri to field '%s'",$field));
+            } else {
+                $this->takeSnapshot($event,false);
             }
         }
 
         $this->eventManager->save($event);
 
         return $event;
+    }
+
+    public function takeSnapshotId($id)
+    {
+        return $this->takeSnapshot($this->eventManager->find($id));
+    }
+    /**
+     * Take a snapshot for the event
+     * @param Event $event
+     * @param boolean $andSave Alsa call eventManager->save
+     * @return Media
+     */
+    public function takeSnapshot(Event $event, $andSave = true)
+    {
+        if (! empty($event->getSnapshot())) {
+            $this->logger->error(sprintf("Event '%s' already has snapshot",$event));
+            return null;
+        }
+        $uri = $event->getField()->getSnapshotUri();
+        if (empty($uri)) {
+            $this->logger->error(sprintf("Field of event '%s' don't have a snapshot uri",$event));
+            return null;
+        }
+
+        $this->logger->info(sprintf("Taking a snapshot for '%s' from '%s'",$event,$uri));
+
+        $media = new Media();
+        $media->setContext('snapshot');
+        $media->setProviderName('sonata.media.provider.image');
+
+        $handle = tmpfile();
+
+        try {
+            $response = $this->httpClient->get($uri);
+        } catch (\RuntimeException $e) {
+            $this->logger->emergency($e);
+            return null;
+        }
+        fwrite($handle, $response->getBody());
+
+        $file = new ApiMediaFile($handle);
+
+        $mimeTypeGuesser = MimeTypeGuesser::getInstance();
+        $file->setMimetype($mimeTypeGuesser->guess($file->getRealPath()));
+
+        $media->setBinaryContent($file);
+
+        $media->setName(sprintf("Snapshot at %s for %s",(new \DateTime())->format('c'), $event));
+        $media->setEnabled(true);
+
+        $this->imageProvider->updateMetadata($media);
+
+        $event->setSnapshot($media);
+        if ($andSave) {
+            $this->eventManager->save($event);
+        }
+
+        return $event->getSnapshot();
     }
 
 }

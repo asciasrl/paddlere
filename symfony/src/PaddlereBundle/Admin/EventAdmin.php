@@ -3,8 +3,6 @@
 namespace PaddlereBundle\Admin;
 
 use Exporter\Source\DoctrineORMQuerySourceIterator;
-use PaddlereBundle\Entity\Event;
-use PaddlereBundle\PaddlereBundle;
 use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
@@ -85,6 +83,7 @@ class EventAdmin extends AbstractAdmin
             ->add('tag')
             ->add('guest')
             ->add('host')
+            ->add('snapshot')
             ->add('transactions')
         ;
     }
@@ -108,6 +107,7 @@ class EventAdmin extends AbstractAdmin
 
     public function getDataSourceIterator()
     {
+        /** @var DoctrineORMQuerySourceIterator $iterator */
         $iterator = parent::getDataSourceIterator();
         $iterator->setDateTimeFormat('Y-m-d\TH.i.s');
         return $iterator;
