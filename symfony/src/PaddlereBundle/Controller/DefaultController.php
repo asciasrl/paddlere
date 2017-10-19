@@ -6,6 +6,7 @@ use PaddlereBundle\Entity\Device;
 use PaddlereBundle\Entity\DeviceManager;
 use PaddlereBundle\Entity\Event;
 use PaddlereBundle\Entity\EventManager;
+use PaddlereBundle\Entity\Facility;
 use PaddlereBundle\Entity\Field;
 use PaddlereBundle\Entity\FieldManager;
 use PaddlereBundle\Entity\Guest;
@@ -19,7 +20,6 @@ use PaddlereBundle\Entity\TransactionManager;
 use PaddlereBundle\Service\EventService;
 use Psr\Log\LoggerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
@@ -221,7 +221,7 @@ class DefaultController extends Controller
                 $datetime = \DateTime::createFromFormat('U',$request->query->getInt('T',(new \DateTime())->getTimestamp())-$timezoneOffset)->setTimezone((new \DateTime())->getTimezone());
                 $datetimeBegin = \DateTime::createFromFormat('U',$request->query->getInt('Beg',0)-$timezoneOffset)->setTimezone((new \DateTime())->getTimezone());
                 $datetimeEnd = \DateTime::createFromFormat('U',$request->query->getInt('End',0)-$timezoneOffset)->setTimezone((new \DateTime())->getTimezone());
-                $log->debug(sprintf("Field:%s Begin:%s End:%s Tz:%s",$field,$datetimeBegin->format('c'),$datetimeEnd->format('c'),$datetimeEnd->getTimezone()->getName()));
+                $log->info(sprintf("Field:%s Begin:%s End:%s Tz:%s",$field,$datetimeBegin->format('c'),$datetimeEnd->format('c'),$datetimeEnd->getTimezone()->getName()));
 
                 /** @var EventManager $eventManager */
                 $eventManager = $this->get('paddlere.manager.event');
@@ -232,7 +232,7 @@ class DefaultController extends Controller
                     $event = $eventManager->find($eventId);
                     if (empty($event)) {
                         $msg = sprintf("Invalid event id '%s'",$eventId);
-                        $log->error($msg);
+                        $log->alert($msg);
                         return new Response($msg,404);
                     }
                 } else {
@@ -244,14 +244,14 @@ class DefaultController extends Controller
                     $event = $eventManager->create();
                 } else {
                     $eventId = $event->getId();
-                    $log->debug(sprintf("Found event '%s'",$event));
+                    $log->info(sprintf("Found event '%s'",$event));
                 }
 
                 $guestId = $request->query->get('Gid','');
                 if (empty($guestId)) {
                     if (empty($eventId)) {
                         $msg = "Guest ID must be specified for new event";
-                        $log->error($msg);
+                        $log->alert($msg);
                         return new Response($msg, 400);
                     } else {
                         $guest = $event->getGuest();
@@ -263,36 +263,44 @@ class DefaultController extends Controller
                     $guest = $guestManager->find($guestId);
                     if (empty($guest)) {
                         $msg = sprintf("Guest id '%s' not found",$guestId);
-                        $log->error($msg);
+                        $log->critical($msg);
                         return new Response($msg,404);
                     } else {
-                        $log->debug(sprintf("Guest '%s'",$guest));
+                        $log->info(sprintf("Guest '%s'",$guest));
                     }
                 }
 
                 $tagSerial = $request->query->get('Tag','');
                 if (empty($tagSerial)) {
                     $tag = null;
-                }
-                /** @var TagManager $tagManager */
-                $tagManager = $this->get('paddlere.manager.tag');
-                $tag =  $tagManager->findOneBy(array('facility' => $device->getFacility(), 'serial' => $tagSerial));
+                } else {
+                    /** @var TagManager $tagManager */
+                    $tagManager = $this->get('paddlere.manager.tag');
+                    /** @var Tag $tag */
+                    $tag =  $tagManager->findOneBy(array('serial' => $tagSerial));
 
-                /** @var Guest $guestTag */
-                /*
-                $guestTag = $tagManager->findOneBy(array('tag' => $tag));
-                if (empty($guestTag)) {
-                    $msg = sprintf("Tag '%s' don't belongs to any guest",$tagSerial);
-                    $log->error($msg);
-                    return new Response($msg,404);
-                }
+                    if (empty($tag)) {
+                        $log->alert(sprintf("Tag '%s' not found",$tagSerial));
+                    } else {
+                        /** @var Facility $tagFacility */
+                        $tagFacility = $tag->getFacility();
+                        if (empty($tagFacility)) {
+                            $log->alert(sprintf("Tag '%s' don't belongs to any facility",$tagSerial));
+                        } elseif ($tagFacility->getId() != $device->getFacility()->getId() ) {
+                            $log->alert(sprintf("Tag '%s' don't belongs to facility '%s' but to '%s'",$tagSerial,$device->getFacility(),$tagFacility));
+                        }
 
-                if ($guestTag->getId() != $guest->getId() ) {
-                    $msg = sprintf("Tag '%s' don't belongs to guest '%s' but to '%s'",$tagSerial,$guest,$guestTag);
-                    $log->error($msg);
-                    return new Response($msg,404);
+                        /** @var Guest $tagGuest */
+                        $tagGuest = $tag->getGuest();
+                        if (empty($tagGuest)) {
+                            $log->alert(sprintf("Tag '%s' don't belongs to any guest",$tagSerial));
+                        } elseif ($tagGuest->getId() != $guest->getId() ) {
+                            $log->alert(sprintf("Tag '%s' don't belongs to guest '%s' but to '%s'",$tagSerial,$guest,$tagGuest));
+                        } else {
+                            $log->info(sprintf("Tag '%s' of guest '%s'",$tagSerial,$tagGuest));
+                        }
+                    }
                 }
-                */
 
                 $hostId = $request->query->get('Hid','');
                 if (empty($hostId)) {
@@ -305,10 +313,10 @@ class DefaultController extends Controller
                     $host = $hostManager->find($hostId);
                     if (empty($host)) {
                         $msg = sprintf("Host id '%s' not found",$guestId);
-                        $log->error($msg);
+                        $log->critical($msg);
                         return new Response($msg,404);
                     } else {
-                        $log->debug(sprintf("Host '%s'",$host));
+                        $log->info(sprintf("Host '%s'",$host));
                     }
                 }
 
