@@ -53,6 +53,13 @@ class Field
      */
     protected $snapshotUri;
 
+    /**
+     * @var string
+     *
+     * @ORM\Column(name="abuse_email", type="string", length=180, nullable=true)
+     */
+    protected $abuseEmail;
+
     // bin/console doctrine:generate:entities --no-backup PaddlereBundle/Entity/Field
 
     /**
@@ -159,5 +166,29 @@ class Field
     public function getSnapshotUri()
     {
         return $this->snapshotUri;
+    }
+
+    /**
+     * Set abuseEmail
+     *
+     * @param string $abuseEmail
+     *
+     * @return Field
+     */
+    public function setAbuseEmail($abuseEmail)
+    {
+        $this->abuseEmail = $abuseEmail;
+
+        return $this;
+    }
+
+    /**
+     * Get abuseEmail
+     *
+     * @return string
+     */
+    public function getAbuseEmail()
+    {
+        return $this->abuseEmail;
     }
 }

@@ -352,8 +352,11 @@ class DefaultController extends Controller
 
                     // TEST: save snapshot also of regular use
                     /** @var EventService $eventService */
+                    /*
                     $eventService = $this->get('paddlere.service.event');
                     $eventService->takeSnapshot($event);
+                    $eventService->notify($event);
+                    */
 
                     $msg = sprintf("%d;%s",$param,$event->getId());
                     return new Response($msg);
@@ -413,6 +416,7 @@ class DefaultController extends Controller
                 /** @var EventService $eventService */
                 $eventService = $this->get('paddlere.service.event');
                 $eventService->takeSnapshot($event);
+                $eventService->notify($event);
 
                 $msg = sprintf("%d;%s",$param,$event->getId());
                 return new Response($msg);

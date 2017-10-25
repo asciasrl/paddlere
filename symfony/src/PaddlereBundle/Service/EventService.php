@@ -15,6 +15,7 @@ use PaddlereBundle\Entity\FieldManager;
 use Psr\Log\LoggerInterface;
 use Sonata\MediaBundle\Extra\ApiMediaFile;
 use Sonata\MediaBundle\Provider\MediaProviderInterface;
+use Symfony\Bridge\Twig\TwigEngine;
 use Symfony\Component\HttpFoundation\File\MimeType\MimeTypeGuesser;
 
 class EventService
@@ -50,7 +51,17 @@ class EventService
      */
     private $httpClient;
 
-    public function __construct(LoggerInterface $logger, EventManager $eventManager, DeviceManager $deviceManager, FieldManager $fieldManager, MediaProviderInterface $imageProvider, Client $httpClient)
+    /**
+     * @var \Swift_Mailer
+     */
+    private $mailer;
+
+    /**
+     * @var TwigEngine
+     */
+    private $templating;
+
+    public function __construct(LoggerInterface $logger, EventManager $eventManager, DeviceManager $deviceManager, FieldManager $fieldManager, MediaProviderInterface $imageProvider, Client $httpClient, \Swift_Mailer $mailer, $templating)
     {
         $this->logger = $logger;
         $this->eventManager = $eventManager;
@@ -58,6 +69,8 @@ class EventService
         $this->fieldManager = $fieldManager;
         $this->imageProvider = $imageProvider;
         $this->httpClient = $httpClient;
+        $this->mailer = $mailer;
+        $this->templating = $templating;
     }
 
     /**
@@ -173,6 +186,34 @@ class EventService
         }
 
         return $event->getSnapshot();
+    }
+
+    /**
+     * Notify the event by email using Field->abuseEmail
+     * @param Event $event
+     * @return int The number of successful recipients. Can be 0 which indicates failure
+     */
+    public function notify(Event $event)
+    {
+        if (empty($event->getField()->getAbuseEmail())) {
+            $this->logger->warning(sprintf("Empty abuse email for field '%s'",$event->getField()));
+            return null;
+        }
+        /** @var \Swift_Message $message */
+        $message = $this->mailer->createMessage();
+        $message
+            ->setFrom("paddlere@ascia.net")
+            ->setTo($event->getField()->getAbuseEmail())
+            ->setCc("paddlere@gmail.com")
+            ->setSubject(sprintf('PaddleRE: %s %s %s',$event->getField()->getFacility(), $event->getEventType(), $event->getField()->getName()))
+            ->setBody( $this->templating->render('Emails/event_notify.txt.twig', ['event' => $event ]));
+        $snapshot = $event->getSnapshot();
+        if (!empty($snapshot)) {
+            $file = $this->imageProvider->getReferenceFile($snapshot);
+            $this->logger->info(sprintf("Attach snapshot '%s'",$file->getName()));
+            $message->attach(\Swift_Attachment::newInstance($file->getContent(),$file->getName(),$snapshot->getContentType()));
+        }
+        return $this->mailer->send($message);
     }
 
 }

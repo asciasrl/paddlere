@@ -1,0 +1,25 @@
+Tipo evento: {{ event.eventType }}
+
+{% if event.field is not null %}
+Struttura: {{ event.field.facility.name }}
+Campo: {{ event.field.name }}
+{% endif %}
+
+Inizio: {{ event.datetimeBegin|date('c') }}
+{% if event.datetimeEnd is not null %}
+Fine: {{ event.datetimeEnd|date('c') }}
+Durata: {{ event.duration|default(0) }} minuti
+{% endif %}
+
+{% if event.guest is not null %}
+Ospite: {{ event.guest.name }}
+Credito: {{ event.guest.credit }}
+{% endif %}
+
+{% if event.tag is not null %}
+Tag: {{ event.tag.serial }} ({{ event.tag.description }})
+{% endif %}
+
+{% if event.host is not null %}
+Operatore: {{  event.host }}
+{% endif %}

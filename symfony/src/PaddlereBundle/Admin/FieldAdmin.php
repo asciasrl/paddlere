@@ -45,7 +45,8 @@ class FieldAdmin extends AbstractAdmin
             ->add('name')
             ->add('facility')
             ->add('snapshotUri')
-		;
+            ->add('abuseEmail')
+        ;
 	}
 
     protected function configureShowFields(ShowMapper $mapper)
@@ -54,6 +55,7 @@ class FieldAdmin extends AbstractAdmin
             ->add('name')
             ->add('facility')
             ->add('snapshotUri')
+            ->add('abuseEmail')
             ->add('deviceField')
         ;
     }
