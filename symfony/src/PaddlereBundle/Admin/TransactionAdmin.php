@@ -13,8 +13,7 @@ use Sonata\AdminBundle\Show\ShowMapper;
 class TransactionAdmin extends AbstractAdmin
 {
     public function configureRoutes(RouteCollection $collection)  {
-        $collection->remove('edit');
-        $collection->remove('create');
+        $collection->clearExcept(array('list', 'show'));
     }
 
     protected $datagridValues = array(

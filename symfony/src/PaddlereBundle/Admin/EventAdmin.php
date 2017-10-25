@@ -22,8 +22,7 @@ class EventAdmin extends AbstractAdmin
     );
 
     public function configureRoutes(RouteCollection $collection)  {
-        $collection->remove('edit');
-        $collection->remove('create');
+        $collection->clearExcept(array('list', 'show'));
     }
 
     protected function configureListFields(ListMapper $mapper)
@@ -83,7 +82,7 @@ class EventAdmin extends AbstractAdmin
             ->add('tag')
             ->add('guest')
             ->add('host')
-            ->add('snapshot')
+            ->add('snapshot', null, ['template' => 'PaddlereBundle:CRUD:show_image.html.twig'])
             ->add('transactions')
         ;
     }
