@@ -22,7 +22,7 @@ class EventAdmin extends AbstractAdmin
     );
 
     public function configureRoutes(RouteCollection $collection)  {
-        $collection->clearExcept(array('list', 'show'));
+        $collection->clearExcept(array('list', 'show', 'export'));
     }
 
     protected function configureListFields(ListMapper $mapper)
