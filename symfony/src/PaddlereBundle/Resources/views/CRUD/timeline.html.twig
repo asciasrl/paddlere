@@ -33,6 +33,10 @@
             dataTable.addColumn({ type: 'date', id: 'Start' });
             dataTable.addColumn({ type: 'date', id: 'End' });
             dataTable.addRows([
+                ['Legenda','Affitto', new Date(2000,01,01,10,0,0), new Date(2000,01,01,11,0,0)],
+                ['Legenda','Abuso', new Date(2000,01,01,12,0,0), new Date(2000,01,01,13,0,0)],
+                ['Legenda','Promo', new Date(2000,01,01,14,0,0), new Date(2000,01,01,15,0,0)],
+                ['Legenda','Lezione', new Date(2000,01,01,16,0,0), new Date(2000,01,01,17,0,0)],
                 {% set colors = "'green','red'" %}
                 {% for event in events %}
 
@@ -54,7 +58,8 @@
                 //'height':'inherit',
                 //timeline: { singleColor: 'cyan' },
                 avoidOverlappingGridLines: true,
-                colors: [ {{ colors|raw }}]
+                //colors: [ {{ colors|raw }}]
+                //colors: [ 'green', 'cyan', 'yellow']
             };
 
             chart.draw(dataTable,options);
