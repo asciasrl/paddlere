@@ -52,7 +52,7 @@ class Host
 
     /**
      * @var Facility
-     * @ORM\ManyToOne(targetEntity="Facility", inversedBy="tags")
+     * @ORM\ManyToOne(targetEntity="Facility", inversedBy="hosts")
      * @ORM\JoinColumn(name="facility_id", referencedColumnName="id", nullable=false)
      */
     protected $facility;

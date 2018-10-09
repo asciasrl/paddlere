@@ -42,7 +42,7 @@ class Tag
 
     /**
      * @var Guest
-     * @ORM\ManyToOne(targetEntity="Guest", inversedBy="Tags")
+     * @ORM\ManyToOne(targetEntity="Guest", inversedBy="tags")
      */
     protected $guest;
 
