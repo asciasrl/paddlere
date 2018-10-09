@@ -385,6 +385,8 @@ class DefaultController extends Controller
                 break;
 
             case 30: // Field abuse
+            case 31: // Sensor A inactivity
+            case 32: // Sensor B inactivity
 
                 /** @var FieldManager $fieldManager */
                 $fieldManager = $this->get('paddlere.manager.field');
@@ -398,7 +400,6 @@ class DefaultController extends Controller
 
                 $timezoneOffset = $request->query->getInt('Tzo',0);
                 $datetime = \DateTime::createFromFormat('U',$request->query->getInt('T',0)-$timezoneOffset)->setTimezone((new \DateTime())->getTimezone());
-                $log->warning(sprintf("Abuse on field '%s' at '%s'",$field,$datetime->format('c')));
 
                 /** @var EventManager $eventManager */
                 $eventManager = $this->get('paddlere.manager.event');
@@ -408,10 +409,21 @@ class DefaultController extends Controller
                 $event->setField($field);
                 $event->setDevice($device);
                 $event->setDatetimeBegin($datetime);
-                $event->setEventType('Abuso');
+                switch ($operation) {
+                    case 30:
+                        $event->setEventType('Abuso');
+                        break;
+                    case 31:
+                        $event->setEventType('Inattivo A');
+                        break;
+                    case 30:
+                        $event->setEventType('Inattivo B');
+                        break;
+                }
                 $eventManager->save($event);
 
                 $log->info(sprintf("Created new event '%s'",$event->getId()));
+                $log->warning(sprintf("%s on field '%s' at '%s'",$event->getEventType(),$field,$datetime->format('c')));
 
                 /** @var EventService $eventService */
                 $eventService = $this->get('paddlere.service.event');
