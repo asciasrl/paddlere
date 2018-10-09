@@ -23,7 +23,7 @@ class Tag
 
     public function __toString()
     {
-        return $this->getSerial();
+        return $this->getSerial()?:'New';
     }
 
     /**
