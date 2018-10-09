@@ -387,6 +387,7 @@ class DefaultController extends Controller
             case 30: // Field abuse
             case 31: // Sensor A inactivity
             case 32: // Sensor B inactivity
+            case 33: // Sensor A+B inactivity
 
                 /** @var FieldManager $fieldManager */
                 $fieldManager = $this->get('paddlere.manager.field');
@@ -416,8 +417,11 @@ class DefaultController extends Controller
                     case 31:
                         $event->setEventType('Inattivo A');
                         break;
-                    case 30:
+                    case 32:
                         $event->setEventType('Inattivo B');
+                        break;
+                    case 33:
+                        $event->setEventType('Inattivi A+B');
                         break;
                 }
                 $eventManager->save($event);
