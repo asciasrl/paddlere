@@ -8,9 +8,18 @@ use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Sonata\CoreBundle\Form\Type\BooleanType;
+use Sonata\CoreBundle\Form\Type\EqualType;
 
 class TagAdmin extends AbstractAdmin
 {
+
+    protected $datagridValues = [
+        'enabled' => [
+            'type'  => EqualType::TYPE_IS_EQUAL, // => 1
+            'value' => BooleanType::TYPE_YES     // => 1
+        ]
+    ];
 
     protected function configureListFields(ListMapper $mapper)
     {
@@ -27,11 +36,12 @@ class TagAdmin extends AbstractAdmin
     protected function configureDatagridFilters(DatagridMapper $mapper)
     {
         $mapper
+            //->add('enabled', null, ['show_filter' => false])
+            ->add('enabled')
             ->add('serial')
             ->add('description')
             ->add('facility')
             ->add('guest')
-            ->add('enabled')
         ;
     }
 
