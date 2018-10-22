@@ -71,19 +71,19 @@ services:
         class: PaddlereBundle\Admin\HostAdmin
         arguments: [~, PaddlereBundle\Entity\Host, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: Setup, label: Host }
+            - { name: sonata.admin, manager_type: orm, group: Manage, label: Host }
 
     paddlere.admin.guest:
         class: PaddlereBundle\Admin\GuestAdmin
         arguments: [~, PaddlereBundle\Entity\Guest, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: Setup, label: Guest }
+            - { name: sonata.admin, manager_type: orm, group: Manage, label: Guest }
 
     paddlere.admin.event:
         class: PaddlereBundle\Admin\EventAdmin
         arguments: [~, PaddlereBundle\Entity\Event, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: Manage, label: Event }
+            - { name: sonata.admin, manager_type: orm, group: Report, label: Event }
 
     paddlere.service.event:
         class: PaddlereBundle\Service\EventService
@@ -93,7 +93,7 @@ services:
         class: PaddlereBundle\Admin\TransactionAdmin
         arguments: [~, PaddlereBundle\Entity\Transaction, ~]
         tags:
-            - { name: sonata.admin, manager_type: orm, group: Manage, label: Transaction }
+            - { name: sonata.admin, manager_type: orm, group: Report, label: Transaction }
 
     paddlere.block.service.facilties_credit:
         class: PaddlereBundle\Block\FacilitiesCreditBlockService
