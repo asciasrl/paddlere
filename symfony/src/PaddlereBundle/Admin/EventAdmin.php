@@ -9,6 +9,7 @@ use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
 use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
+use Sonata\CoreBundle\Form\Type\DatePickerType;
 
 class EventAdmin extends AbstractAdmin
 {
@@ -42,7 +43,15 @@ class EventAdmin extends AbstractAdmin
 
     protected function configureDatagridFilters(DatagridMapper $mapper)
     {
+        $datePickerOptions = [
+            'format' => 'yyyy-MM-dd',
+            'dp_side_by_side' => true
+        ];
         $mapper
+            ->add('datetimeBegin','doctrine_orm_date_range', array('show_filter' => true),'sonata_type_date_range_picker',
+                array('field_options_start' => $datePickerOptions,
+                      'field_options_end' => $datePickerOptions)
+            )
             ->add('eventType')
             ->add('field.facility')
             ->add('field')
