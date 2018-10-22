@@ -94,6 +94,7 @@ sonata_block:
 
 sonata_admin:
     title:      'PaddleRE Admin'
+    persist_filters: true
     options:
         title_mode:   single_text
     show_mosaic_button:   false
