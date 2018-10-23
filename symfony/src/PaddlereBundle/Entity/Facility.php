@@ -34,6 +34,13 @@ class Facility
     protected $name;
 
     /**
+     * @var string
+     *
+     * @ORM\Column(name="abuse_email", type="string", length=180, nullable=true)
+     */
+    protected $abuseEmail;
+
+    /**
      * @var Field[]
      * @ORM\OneToMany(targetEntity="Field", mappedBy="facility"))
      */
@@ -309,5 +316,29 @@ class Facility
     public function getEnabled()
     {
         return $this->enabled;
+    }
+
+    /**
+     * Set abuseEmail
+     *
+     * @param string $abuseEmail
+     *
+     * @return Facility
+     */
+    public function setAbuseEmail($abuseEmail)
+    {
+        $this->abuseEmail = $abuseEmail;
+
+        return $this;
+    }
+
+    /**
+     * Get abuseEmail
+     *
+     * @return string
+     */
+    public function getAbuseEmail()
+    {
+        return $this->abuseEmail;
     }
 }
