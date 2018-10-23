@@ -48,6 +48,13 @@ class Device
     protected $lastseenAt;
 
     /**
+     * @var \DateTime
+     *
+     * @ORM\Column(name="lastseen_ping", type="integer")
+     */
+    protected $lastPing;
+
+    /**
      * @var \String
      *
      * @ORM\Column(name="remote_ip", type="string", length=45, nullable=true)
@@ -239,5 +246,29 @@ class Device
     public function getRemoteIP()
     {
         return $this->remoteIP;
+    }
+
+    /**
+     * Set lastPing
+     *
+     * @param integer $lastPing
+     *
+     * @return Device
+     */
+    public function setLastPing($lastPing)
+    {
+        $this->lastPing = $lastPing;
+
+        return $this;
+    }
+
+    /**
+     * Get lastPing
+     *
+     * @return integer
+     */
+    public function getLastPing()
+    {
+        return $this->lastPing;
     }
 }

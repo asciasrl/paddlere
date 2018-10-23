@@ -66,12 +66,47 @@ class DefaultController extends Controller
             $log->error($msg);
             return new Response($msg,404);
         }
+        $lastseenAt = $device->getLastseenAt();
         $log->info(sprintf("Ping device '%s' from %s", $device,join('/',$request->getClientIps())));
         $device->setRemoteIP($request->getClientIp());
         $deviceManager->ping($device);
 
         switch ($operation) {
             case 1: // no operation- ping and time sync
+                if ($param > 0) {
+                    $log->debug(sprintf("Last Ping Sequence=%d Actual=%d",$device->getLastPing(),$param));
+                    if ($param > 1 && ($device->getLastPing()+1) == $param) {
+                        // all right
+                        $log->debug("Ping sequence ok");
+                    } elseif ($device->getLastPing() == 65535 && $param=1) {
+                        // rollover
+                        $log->info("Ping sequence rollover");
+                    } else {
+                        /** @var EventManager $eventManager */
+                        $eventManager = $this->get('paddlere.manager.event');
+                        /** @var Event $event */
+                        $event = $eventManager->create();
+
+                        $event->setDevice($device);
+                        $event->setDatetimeBegin($lastseenAt);
+                        $event->setDatetimeEnd(new \DateTime());
+                        if ($param < $device->getLastPing()) {
+                            $log->warning(sprintf("Device reboot, ping=%u",$param));
+                            $event->setEventType("Reboot");
+                        } elseif ($param > 1) {
+                            $log->warning(sprintf("Communication down, ping=%u",$param));
+                            $event->setEventType("Disconnect");
+                        }
+                        $eventManager->save($event);
+
+                        /** @var EventService $eventService */
+                        $eventService = $this->get('paddlere.service.event');
+                        $eventService->notify($event);
+                    }
+                    $device->setLastPing($param);
+                    $deviceManager->getEntityManager()->flush();
+                }
+
                 $timezoneOffset = $request->query->getInt('Tzo',0);
                 $datetime = \DateTime::createFromFormat('U',$request->query->getInt('T',0)-$timezoneOffset)->setTimezone((new \DateTime())->getTimezone());
                 $delta = (new \DateTime())->getTimestamp() - $datetime->getTimestamp();

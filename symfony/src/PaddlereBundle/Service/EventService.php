@@ -195,24 +195,25 @@ class EventService
      */
     public function notify(Event $event)
     {
-        if (empty($event->getField()->getAbuseEmail())) {
-            $this->logger->warning(sprintf("Empty abuse email for field '%s'",$event->getField()));
+        if (empty($event->getDevice()->getFacility()->getAbuseEmail())) {
+            $this->logger->warning(sprintf("Empty abuse email for facility '%s'",$event->getDevice()->getFacility()));
             return null;
         }
         /** @var \Swift_Message $message */
         $message = $this->mailer->createMessage();
         $message
             ->setFrom("paddlere@ascia.net")
-            ->setTo($event->getField()->getAbuseEmail())
+            ->setTo($event->getDevice()->getFacility()->getAbuseEmail())
             ->setCc("paddlere@gmail.com")
-            ->setSubject(sprintf('PaddleRE: %s %s %s',$event->getField()->getFacility(), $event->getEventType(), $event->getField()->getName()))
             ->setBody( $this->templating->render('Emails/event_notify.txt.twig', ['event' => $event ]));
+        $message->setSubject(sprintf('PaddleRE: %s %s %s', $event->getEventType(), $event->getDevice(), $event->getField()?$event->getField()->getName():""));
         $snapshot = $event->getSnapshot();
         if (!empty($snapshot)) {
             $file = $this->imageProvider->getReferenceFile($snapshot);
             $this->logger->info(sprintf("Attach snapshot '%s'",$file->getName()));
             $message->attach(\Swift_Attachment::newInstance($file->getContent(),$file->getName(),$snapshot->getContentType()));
         }
+        $this->logger->debug("Sending evant notify: " . $message);
         return $this->mailer->send($message);
     }
 
