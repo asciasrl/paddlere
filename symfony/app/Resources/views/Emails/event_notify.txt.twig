@@ -1,7 +1,10 @@
 Tipo evento: {{ event.eventType }}
 
+{% if event.device is not null %}
+Struttura: {{ event.device.facility.name }}
+Dispositivo: {{ event.device.name }}
+{% endif %}
 {% if event.field is not null %}
-Struttura: {{ event.field.facility.name }}
 Campo: {{ event.field.name }}
 {% endif %}
 
