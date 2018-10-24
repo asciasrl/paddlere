@@ -81,6 +81,8 @@ class DefaultController extends Controller
                     } elseif ($device->getLastPing() == 65535 && $param=1) {
                         // rollover
                         $log->info("Ping sequence rollover");
+                    } elseif ($device->getLastPing() == 0) {
+                        $log->info("First seen ping");
                     } else {
                         /** @var EventManager $eventManager */
                         $eventManager = $this->get('paddlere.manager.event');
