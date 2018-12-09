@@ -5,6 +5,7 @@ namespace PaddlereBundle\Controller;
 use Doctrine\Common\Collections\Criteria;
 use PaddlereBundle\Entity\EventManager;
 use PaddlereBundle\Entity\Field;
+use PaddlereBundle\Entity\Guest;
 use Sonata\AdminBundle\Controller\CRUDController as SonataCRUDController;
 use Symfony\Component\Form\Extension\Core\Type\DateIntervalType;
 use Symfony\Component\Form\Extension\Core\Type\DateType;
@@ -75,5 +76,12 @@ class CRUDController extends SonataCRUDController
             'base_dir' => realpath($this->getParameter('kernel.root_dir').'/..').DIRECTORY_SEPARATOR,
         ]);
 
+    }
+
+    public function chargeAction()
+    {
+        /** @var Guest $guest */
+        $guest = $this->admin->getSubject();
+        return $this->redirectToRoute('admin_paddlere_charge_create', array('guest_id' => $guest->getId()));
     }
 }

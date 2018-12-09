@@ -75,9 +75,15 @@ services:
 
     paddlere.admin.guest:
         class: PaddlereBundle\Admin\GuestAdmin
-        arguments: [~, PaddlereBundle\Entity\Guest, ~]
+        arguments: [~, PaddlereBundle\Entity\Guest, PaddlereBundle:CRUD]
         tags:
             - { name: sonata.admin, manager_type: orm, group: Manage, label: Guest }
+
+    paddlere.admin.charge:
+        class: PaddlereBundle\Admin\ChargeAdmin
+        arguments: [~, PaddlereBundle\Entity\Charge, ~]
+        tags:
+            - { name: sonata.admin, manager_type: orm, group: Manage, label: Charge }
 
     paddlere.admin.event:
         class: PaddlereBundle\Admin\EventAdmin

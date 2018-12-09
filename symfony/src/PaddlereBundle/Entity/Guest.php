@@ -69,6 +69,12 @@ class Guest
     protected $tags;
 
     /**
+     * @var Charge
+     * @ORM\OneToMany(targetEntity="Charge", mappedBy="guest")
+     */
+    protected $charges;
+
+    /**
      * @var \DateTime
      *
      * @ORM\Column(name="lastseen_at", type="datetime", nullable=true)
@@ -283,5 +289,39 @@ class Guest
     public function getLastseenAt()
     {
         return $this->lastseenAt;
+    }
+
+    /**
+     * Add charge
+     *
+     * @param \PaddlereBundle\Entity\Charge $charge
+     *
+     * @return Guest
+     */
+    public function addCharge(\PaddlereBundle\Entity\Charge $charge)
+    {
+        $this->charges[] = $charge;
+
+        return $this;
+    }
+
+    /**
+     * Remove charge
+     *
+     * @param \PaddlereBundle\Entity\Charge $charge
+     */
+    public function removeCharge(\PaddlereBundle\Entity\Charge $charge)
+    {
+        $this->charges->removeElement($charge);
+    }
+
+    /**
+     * Get charges
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getCharges()
+    {
+        return $this->charges;
     }
 }

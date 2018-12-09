@@ -8,9 +8,11 @@ use Sonata\AdminBundle\Admin\AbstractAdmin;
 use Sonata\AdminBundle\Datagrid\DatagridMapper;
 use Sonata\AdminBundle\Datagrid\ListMapper;
 use Sonata\AdminBundle\Form\FormMapper;
+use Sonata\AdminBundle\Route\RouteCollection;
 use Sonata\AdminBundle\Show\ShowMapper;
 use Sonata\CoreBundle\Form\Type\BooleanType;
 use Sonata\CoreBundle\Form\Type\EqualType;
+use Symfony\Component\Routing\Route;
 
 class GuestAdmin extends AbstractAdmin
 {
@@ -22,6 +24,12 @@ class GuestAdmin extends AbstractAdmin
         ]
     ];
 
+    protected function configureRoutes(RouteCollection $collection)
+    {
+        $collection->add('charge', $this->getRouterIdParameter().'/charge');
+        parent::configureRoutes($collection);
+    }
+
     protected function configureListFields(ListMapper $mapper)
     {
         $mapper
@@ -29,6 +37,13 @@ class GuestAdmin extends AbstractAdmin
             ->add('facility')
             ->add('tags')
             ->add('credit')
+            ->add('_action', null, array(
+                'actions' => array(
+                    'charge' => array(
+                        'template' => 'PaddlereBundle:CRUD:list__action_charge.html.twig'
+                    )
+                )
+            ))
             ->add('fun')
             ->add('enabled')
             ->add('lastseenAt')
@@ -51,7 +66,7 @@ class GuestAdmin extends AbstractAdmin
 		$mapper
             ->add('name')
             ->add('facility')
-            ->add('credit')
+            ->add('credit', null, ['attr' => ['readonly' => true]])
             ->add('fun');
 
 		/** @var Guest $guest */
